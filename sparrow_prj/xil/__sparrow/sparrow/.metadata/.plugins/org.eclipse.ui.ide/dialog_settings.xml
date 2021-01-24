@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<list key="org.eclipse.ui.internal.wizards.datatransfer.SmartImportRootWizardPage.knownSources">
+		<item value="/media/vovag/07f0e685-575b-4e47-895d-2490c005fd98/proj/sparrow_prj/xil/sparrow/sparrow"/>
+		<item value="/media/vovag/07f0e685-575b-4e47-895d-2490c005fd98/proj/sparrow_prj/xil/sparrow/def_sepia"/>
+		<item value="/media/vovag/07f0e685-575b-4e47-895d-2490c005fd98/proj/sparrow_prj/xil/sparrow"/>
+	</list>
+	<section name="ExternalProjectImportWizard">
+		<item value="true" key="WizardProjectsImportPage.STORE_NESTED_PROJECTS"/>
+		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
+		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
+		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="/home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module"/>
+			<item value="/home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_dbg"/>
+			<item value="/media/vovag/07f0e685-575b-4e47-895d-2490c005fd98/proj/sparrow_prj/xil/sparrow/sparrow_dbg"/>
+			<item value="/media/vovag/07f0e685-575b-4e47-895d-2490c005fd98/proj/sparrow_prj/xil/sparrow/sparrow/sparrow"/>
+		</list>
+		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
+			<item value=""/>
+		</list>
+	</section>
+	<section name="SaveAsDialogSettings">
+		<item value="613" key="DIALOG_WIDTH"/>
+		<item value="1|Ubuntu|11.0|0|GTK|1|" key="DIALOG_FONT_NAME"/>
+		<item value="598" key="DIALOG_HEIGHT"/>
+		<item value="575" key="DIALOG_X_ORIGIN"/>
+		<item value="74" key="DIALOG_Y_ORIGIN"/>
+	</section>
+</section>

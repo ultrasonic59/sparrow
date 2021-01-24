@@ -1,0 +1,336 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <errno.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#include "./inc/rp_ugen_cnf.h"
+#include "./inc/my_types.h"
+#include "./inc/udp_types.h"
+#include "./inc/udp_cmds.h"
+#include "./inc/ugen_fpga.h"
+///=================================================
+///extern volatile ugen_reg_t *ugen_regs;
+extern volatile void *fpga_regs;
+
+u8 *t_par_buff;
+static u16 param_num_bytes;
+u32 g_changed_param=0;
+void set_delay(uint32_t idat)
+{
+ugen_reg_t *ugen_regs=(ugen_reg_t *)fpga_regs;
+ugen_regs->delay_a=idat;
+}
+void set_len(uint32_t idat)
+{
+ugen_reg_t *ugen_regs=(ugen_reg_t *)fpga_regs;
+ugen_regs->len_a= idat;
+}
+void set_rec_param(u8* ibuf)
+{
+u16 num_bytes1;
+param_num_bytes= (*ibuf)|(*(ibuf+1)<<8);
+num_bytes1= (*(ibuf+2))|(*(ibuf+3)<<8);
+
+memcpy(&g_changed_param,ibuf+4,sizeof(u32));
+memcpy(t_par_buff,ibuf+4,param_num_bytes);
+////fprintf(stderr,"\nset_rec_param g_changed_param[%lx]:num_bytes1[%x]",g_changed_param,num_bytes1);
+////set_changed_param();
+}
+void set_changed_param(void)
+{
+long len;
+u32 t_changed_param=0;
+uint16_t tmp_dat;
+u16 num_bytes=0;
+u16 t_offs=sizeof(u32);
+fprintf(stderr,"\n===_set_changed_param[%lx]====\n",g_changed_param);
+if(g_changed_param&CHNG_BSTRB)
+	{
+
+	memcpy(&tmp_dat,t_par_buff+t_offs,sizeof(u16));
+	set_delay(tmp_dat);
+	t_offs+=sizeof(u16);
+	g_changed_param&=~CHNG_BSTRB;
+	}
+if(g_changed_param&CHNG_LSTRB)
+	{
+	memcpy(&tmp_dat,t_par_buff+t_offs,sizeof(u16));
+	set_len(tmp_dat);
+	t_offs+=sizeof(u16);
+	fprintf("\n===CHNG_LSTRB[%x]====",tmp_dat);
+	g_changed_param&=~CHNG_LSTRB;
+	}
+
+#if 0
+if(g_changed_param&CHNG_ALL)
+	{
+///	printf("\n==CHNG_ALL[%x:%x:%x]====",sizeof(ed_par_bl_trk_t),sizeof(par_bl_trk_t)
+///			,sizeof(ed_par_bl_trk_t)+sizeof(par_bl_trk_t));
+	memcpy(&ed_par_bl_trk,t_par_buff+t_offs,sizeof(ed_par_bl_trk_t));
+	t_offs+=sizeof(ed_par_bl_trk_t);
+
+	memcpy(&g_par_filtr,t_par_buff+t_offs,sizeof(par_filtr_t));
+	t_offs+=sizeof(par_filtr_t);
+
+	memcpy(&curr_param,t_par_buff+t_offs,sizeof(par_bl_trk_t));
+	verif_param();
+	put_all_par_trk();
+	init_fmed();
+///	fprintf(stderr,"\n===CHNG_ALL>>[%x:%x:%x]",ed_par_bl_trk.curr_gen,ed_par_bl_trk.curr_osc,ed_par_bl_trk.curr_pow);
+///	fprintf(stderr,"\n===CHNG_ALL0:[%x:%x:%x]",ed_par_bl_trk.osc_par[0].num_tact,ed_par_bl_trk.osc_par[0].num_us
+///			,ed_par_bl_trk.osc_par[0].rej);
+////	fprintf(stderr,"\n===CHNG_ALL1:[%x:%x:%x]",ed_par_bl_trk.osc_par[1].num_tact,ed_par_bl_trk.osc_par[1].num_us
+////			,ed_par_bl_trk.osc_par[1].rej);
+	fprintf(stderr,"\n===CHNG_ALL>>>>[%x:%x:%x[%x:%x][%x:%x]\n[%x:%x:%x:%x][%x:%x]<<<"
+			,curr_param.num_gen,curr_param.num_pow,curr_param.num_us
+			,curr_param.izm_par.num_izm
+			,curr_param.izm_par.num_tacts
+			,ed_par_bl_trk.curr_gen
+			,ed_par_bl_trk.curr_osc
+			,ed_par_bl_trk.osc_par[0].num_us
+			,ed_par_bl_trk.osc_par[0].num_tact
+			,ed_par_bl_trk.osc_par[1].num_us
+			,ed_par_bl_trk.osc_par[1].num_tact
+		,g_par_filtr.filtr_defect
+			,g_par_filtr.filtr_thick
+////			,g_par_filtr.filtr_ak
+			);
+	g_changed_param=0;
+	}
+else
+	{
+	///printf("\n===_set_changed_param1[%lx]====\n",g_changed_param);
+	if(g_changed_param&CHNG_TACT)
+		{
+		memcpy(&_curr_tact,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+////		printf("\n===CHNG_TACT====[%x]",ed_par_trk.curr_tact);
+		t_changed_param|=CHNG_TACT;
+		g_changed_param&=~CHNG_TACT;
+		}
+	if(g_changed_param&CHNG_NUS)
+		{
+		memcpy(&_curr_us,t_par_buff+t_offs,sizeof(u8));
+		_curr_us&=(NUM_USS_BL-1);
+		t_offs+=sizeof(u8);
+		fprintf(stderr,"\n===CHNG_NUS====[%x:%x]",ed_par_bl_trk.curr_osc ,_curr_us);
+		t_changed_param|=CHNG_NUS;
+		g_changed_param&=~CHNG_NUS;
+		}
+	if(g_changed_param&CHNG_ONUS)
+		{
+		memcpy(&_mCurrUs.on_us,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		///printf("\n===CHNG_ONUS====[%x]",_mCurrUs.on_us);
+		t_changed_param|=CHNG_ONUS;
+		g_changed_param&=~CHNG_ONUS;
+		}
+	if(g_changed_param&CHNG_KUS)
+		{
+		memcpy(&_mCurrUs.kus,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		fprintf(stderr,"\n===CHNG_KUS====[%x:%x:%x]",_mCurrUs.kus,_curr_tact,_curr_us);
+		t_changed_param|=CHNG_KUS;
+		g_changed_param&=~CHNG_KUS;
+		}
+	if(g_changed_param&CHNG_BEGR)
+		{
+		memcpy(&ed_par_bl_trk.osc_par[ed_par_bl_trk.curr_osc].curr_begr,t_par_buff+t_offs,sizeof(u16));
+		t_offs+=sizeof(u16);
+		////fprintf(stderr,"\n===CHNG_BEGR====[%x:%x]",ed_par_bl_trk.curr_osc,ed_par_bl_trk.osc_par[ed_par_bl_trk.curr_osc].curr_begr);
+		t_changed_param|=CHNG_BEGR;
+		g_changed_param&=~CHNG_BEGR;
+		}
+	if(g_changed_param&CHNG_ENDR)
+		{
+		memcpy(&ed_par_bl_trk.osc_par[ed_par_bl_trk.curr_osc].curr_end_r,t_par_buff+t_offs,sizeof(u16));
+		t_offs+=sizeof(u16);
+		memcpy(&ed_par_bl_trk.osc_par[ed_par_bl_trk.curr_osc].curr_step_r,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		///printf("\n===CHNG_ENDR1[%x:%x]====",ed_par_trk.curr_step_r
+		///		,ed_par_trk.curr_end_r);
+		t_changed_param|=CHNG_ENDR;
+		g_changed_param&=~CHNG_ENDR;
+		}
+	if(g_changed_param&CHNG_TT)
+		{
+		memcpy(&_mCurrUs.taut,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		////printf("\n===CHNG_TT[%x]====",_mCurrUs.taut);
+		t_changed_param|=CHNG_TT;
+		g_changed_param&=~CHNG_TT;
+		}
+	if(g_changed_param&CHNG_TV)
+		{
+		memcpy(&_mCurrUs.tauv,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+///		printf("\n===CHNG_TV[%x]====",_mCurrUs.tauv);
+		t_changed_param|=CHNG_TV;
+		g_changed_param&=~CHNG_TV;
+		}
+	if(g_changed_param&CHNG_NSTRB)
+		{
+		memcpy(&_curr_strb,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		////printf("\n===CHNG_NSTRB[%x]====",ed_par_trk.curr_strob);
+		t_changed_param|=CHNG_NSTRB;
+		g_changed_param&=~CHNG_NSTRB;
+		}
+	if(g_changed_param&CHNG_BSTRB)
+		{
+		memcpy(&_mCurrUs.strb[_curr_strb].beg,t_par_buff+t_offs,sizeof(u16));
+		t_offs+=sizeof(u16);
+		////printf("\n===CHNG_BSTRB[%x]====",_mCurrUs.strb[ed_par_trk.curr_strob].beg);
+		t_changed_param|=CHNG_BSTRB;
+		g_changed_param&=~CHNG_BSTRB;
+		}
+	if(g_changed_param&CHNG_LSTRB)
+		{
+		memcpy(&_mCurrUs.strb[_curr_strb].len,t_par_buff+t_offs,sizeof(u16));
+		t_offs+=sizeof(u16);
+///		printf("\n===CHNG_LSTRB[%x]====",_mCurrUs.strb[ed_par_trk.curr_strob].len);
+		t_changed_param|=CHNG_LSTRB;
+		g_changed_param&=~CHNG_LSTRB;
+		}
+	if(g_changed_param&CHNG_POR)
+		{
+		memcpy(&_mCurrUs.strb[_curr_strb].por,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		////printf("\n===CHNG_POR[%x]====",_mCurrUs.strb[ed_par_trk.curr_strob].por);
+		t_changed_param|=CHNG_POR;
+		g_changed_param&=~CHNG_POR;
+		}
+	if(g_changed_param&CHNG_NUMPV)
+		{
+		memcpy(&_curr_pvrch,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		memcpy(&_mCurrUs.vrch.num_p,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		t_changed_param|=CHNG_NUMPV;
+		g_changed_param&=~CHNG_NUMPV;
+		}
+	if(g_changed_param&CHNG_VRON)
+		{
+		memcpy(&_mCurrUs.vrch.on_vrch,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		t_changed_param|=CHNG_VRON;
+		g_changed_param&=~CHNG_VRON;
+		}
+	if(g_changed_param&CHNG_VTIME)
+		{
+		memcpy(&_mCurrUs.vrch.time[_curr_pvrch],t_par_buff+t_offs,sizeof(u16));
+		t_offs+=sizeof(u16);
+		t_changed_param|=CHNG_VTIME;
+		g_changed_param&=~CHNG_VTIME;
+		fprintf(stderr,"\n===CHNG_VTIME[[%d:%d:%d]:%x:%x]====",_curr_tact,_curr_us,_curr_pvrch,_mCurrUs.vrch.time[_curr_pvrch]
+			,_mCurrUs.vrch.kus[_curr_pvrch]);
+		}
+	if(g_changed_param&CHNG_VKUS)
+		{
+		memcpy(&_mCurrUs.vrch.kus[_curr_pvrch],t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		t_changed_param|=CHNG_VKUS;
+		g_changed_param&=~CHNG_VKUS;
+		fprintf(stderr,"\n===CHNG_VKUS[[%d:%d:%d]:%x:%x]====",_curr_tact,_curr_us,_curr_pvrch,_mCurrUs.vrch.time[_curr_pvrch]
+			,_mCurrUs.vrch.kus[_curr_pvrch]);
+		}
+	if(g_changed_param&CHNG_NGEN)
+		{
+		memcpy(&ed_par_bl_trk.curr_gen,t_par_buff+t_offs,sizeof(u8));
+		ed_par_bl_trk.curr_gen&=(NUM_GENS_BL-1);
+
+		t_offs+=sizeof(u8);
+		printf("\n===CHNG_NGEN[%x]====",ed_par_bl_trk.curr_gen);
+		t_changed_param|=CHNG_NGEN;
+		g_changed_param&=~CHNG_NGEN;
+		}
+	if(g_changed_param&CHNG_ONGEN)
+		{
+		memcpy(&_mCurrNgen.on_gen,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		printf("\n===CHNG_ONGEN[%x]====",_mCurrNgen.on_gen);
+		t_changed_param|=CHNG_ONGEN;
+		g_changed_param&=~CHNG_ONGEN;
+		}
+	if(g_changed_param&CHNG_LIMP)
+		{
+		memcpy(&_mCurrNgen.len_imp,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		printf("\n===CHNG_LIMP[%x]====",_mCurrNgen.len_imp);
+		t_changed_param|=CHNG_LIMP;
+		g_changed_param&=~CHNG_LIMP;
+		}
+	if(g_changed_param&CHNG_NPOW)
+		{
+		memcpy(&ed_par_bl_trk.curr_pow,t_par_buff+t_offs,sizeof(u8));
+		ed_par_bl_trk.curr_pow &= (NUM_POW_GENS_BL-1);
+		t_offs+=sizeof(u8);
+		////printf("\n===CHNG_NPOW[%x]====",ed_par_trk.curr_pow);
+		t_changed_param|=CHNG_NPOW;
+		g_changed_param&=~CHNG_NPOW;
+		}
+	if(g_changed_param&CHNG_PVAL)
+		{
+		memcpy(&_mCurrPow.val,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		///printf("\n===CHNG_PVAL[%x]====",_mCurrPow.val);
+		t_changed_param|=CHNG_PVAL;
+		g_changed_param&=~CHNG_PVAL;
+		}
+	if(g_changed_param&CHNG_US_REJ)
+		{
+		memcpy(&_mCurrUs.rej,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		memcpy(&_mCurrUs.detpar,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+
+////		fprintf(stderr,"\n===CHNG_REJ_US[%x:%x]====",_mCurrUs.rej,_mCurrUs.detpar);
+		t_changed_param|=CHNG_US_REJ;
+		g_changed_param&=~CHNG_US_REJ;
+		}
+	if(g_changed_param&CHNG_REJ_OSC)
+		{
+		memcpy(&ed_par_bl_trk.osc_par[ed_par_bl_trk.curr_osc].rej,t_par_buff+t_offs,sizeof(u8));
+		t_offs+=sizeof(u8);
+		////printf("\n===CHNG_REJ_OSC[%x]====",ed_par_trk.rej_osc);
+		t_changed_param|=CHNG_REJ_OSC;
+		g_changed_param&=~CHNG_REJ_OSC;
+		}
+#if 0
+	if(g_changed_param&CHNG_IZM)
+		{
+////		memcpy(&curr_par_contr.izm_par,t_par_buff+t_offs,sizeof(par_izm_t));
+		t_offs+=sizeof(par_izm_t);
+		////printf("\n===CHNG_CHANLIST====");
+		g_changed_param&=~CHNG_IZM;
+		}
+#endif
+	if(g_changed_param&CHNG_NUM_OSC)
+		{
+		memcpy(&ed_par_bl_trk.curr_osc,t_par_buff+t_offs,sizeof(uint8_t));
+		ed_par_bl_trk.curr_osc&=0x1;
+		t_offs+=sizeof(uint8_t);
+		fprintf(stderr,"\n===CHNG_NUM_OSC====[%d]",ed_par_bl_trk.curr_osc);
+		t_changed_param|=CHNG_NUM_OSC;
+		g_changed_param&=~CHNG_NUM_OSC;
+		}
+	g_changed_param=0;
+	num_bytes=t_offs;
+	verif_param();
+	memcpy(t_par_buff,&t_changed_param,sizeof(uint32_t));
+	lseek (mod_trk_fd, OFFS_PARAM, 0);
+	len = write(mod_trk_fd, t_par_buff, num_bytes);
+	if(len!=num_bytes)
+		printf("ERR len[%d][%ld]+\n",num_bytes,len);
+////	else
+////		printf("+ok+\n");
+	}
+#endif
+g_changed_param=0;
+}

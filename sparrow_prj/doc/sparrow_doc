@@ -1,0 +1,349 @@
+
+Чтобы скрипт запускался при загрузке, необходимо прописать его в файле /etc/rc.local до строчки exit 0. 
+
+sudo tar -xvf //home/vovag/proj/armhf-rootfs-ubuntu-xenial.tar 
+///==================================================
+depmod -a
+
+lsb_release -a
+whereis hostapd
+///====================================
+for no change eth0 to .....
+GRUB_CMDLINE_LINUX="net.ifnames=0 biosdevname=0"
+net.ifnames=0 biosdevname=0
+///===========================
+
+wpa_passphrase Sepia sepia12345
+///===========================
+
+systemd-analyze
+systemd-analyze blame
+journalctl
+
+init-checkconf /etc/init/module-init-tools.conf
+service module-init-tools start
+cat /var/log/module-init-tools.log
+/lib/modules/4.19.0-xilinx/kernel/drivers/umka_trk.ko
+
+mount -o loop xillinux-2.0.img \
+   -o offset=$((512*32768)) /mnt/tmp/
+
+
+https://mirrors.edge.kernel.org/pub/linux/kernel/projects/rt/4.4/older/
+cp -R linux-xlnx-4.4 linux-4.4-rt 
+cd linux-4.4-rt
+////wget https://www.kernel.org/pub/linux/kernel/projects/rt/4.4/patch-4.4.138-rt155.patch.gz
+wget https://www.kernel.org/pub/linux/kernel/projects/rt/4.4/older/patch-4.4-rt3.patch.gz
+///gunzip patch-4.4.138-rt155.patch.gz
+gunzip patch-4.4-rt3.patch.gz 
+
+///cat patch-4.4.138-rt155.patch | patch -p1
+cat patch-4.4-rt3.patch | patch -p1
+apt-cache policy hostapd
+dpkg -P --force-all hostapd
+apt-get install hostapd=1.0
+======= for debug ====================
+tcf-agent&
+/lib/systemd/system/bluetooth.service
+=====================================
+sudo ./xsetup -Uninstall 
+sftp://root@192.168.1.184/mnt/p1
+
+sftp://root@192.168.1.186/mnt/p1
+
+sftp://root@192.168.1.184/home/octopuz
+sftp://root@192.168.1.184/lib/modules/4.4.0-xilinx/kernel/drivers
+
+sftp://root@192.168.1.185
+root
+sftp://root@192.168.1.79
+sftp://root@192.168.1.173
+
+sftp://root@192.168.1.186/home/octopuz
+sftp://root@192.168.1.186/lib/modules/4.4.0-xilinx/kernel/drivers
+
+tcf-agent&
+sftp://root@192.168.1.34
+sftp://root@192.168.1.184
+sftp://debian@192.168.1.86
+reboot
+sftp://root@192.168.1.110
+sftp://root@192.168.1.184
+sftp://root@192.168.1.111
+
+sftp://root@192.168.1.97
+sftp://root@192.168.1.73
+
+sftp://root@192.168.1.115
+
+mount /dev/mmcblk0p1 /mnt/p1
+
+mount /dev/sda1 /mnt/p1
+
+tar xvzf /home/vovag/share_win/Xilinx_Vivado_SDK_2015.1_0428_1.tar.gz
+
+tar xvzf /home/vovag/share_win/Xilinx_Vivado_SDK_2016.4_1215_1.tar.gz
+
+Xilinx_Vivado_SDK_2016.4_1215_1.tar.gz
+
+make NAME=bare_metal_test all
+make NAME=red_pitaya_0_92
+make NAME=scanner
+
+patch -d tmp/bare_metal_test.cpu1/app_cpu1_bsp -p 0 < patches/standalone_v6_1.patch
+
+
+$ . settings.sh
+
+ln -s /home/vovag/proj/octopuz/xil/u-boot-xlnx/include/dt-bindings /home/vovag/proj/octopuz/xil/octpz_tst1/octpz_tst1.sdk/uboot-x/src/include/dt-bindings
+
+ xsdk -workspace /home/vovag/proj/octopuz/xil/octpz_tst1/octpz_tst1.sdk -hwspec /home/vovag/proj/octopuz/xil/octpz_tst1/octpz_tst1.sdk/octopz_top.hdf
+
+export CROSS_COMPILE=arm-linux-gnueabihf-
+$ . settings.sh
+======  Device Tree compiler (required to build U-Boot) ==================
+git clone https://git.kernel.org/pub/scm/utils/dtc/dtc.git
+
+/opt/Xilinx/SDK/2017.1/gnu/aarch32/lin/gcc-arm-linux-gnueabi/arm-linux-gnueabihf/libc/usr/include	
+sudo apt-get install libssl-dev
+====== u-boot ============================
+git clone git://github.com/Xilinx/u-boot-xlnx.git
+export PATH=/opt/Xilinx/SDK/2017.1/gnu/arm/lin/bin:$PATH
+export PATH=/opt/Xilinx/SDK/2015.4/gnu/arm/lin/bin:$PATH
+
+export CROSS_COMPILE=arm-xilinx-linux-gnueabi-
+export CROSS_COMPILE=arm-none-eabi-
+
+export CROSS_COMPILE=arm-none-eabi-
+arm-xilinx-linux-gnueabi-gcc --h
+arm-xilinx-linux-gnueabi-gcc --help=optimizers
+
+--help={common|optimizers
+make zynq_zed_config
+make zynq_picozed_config
+make zynq_zebra_config
+make zynq_zybo_config
+make zynq_microzed_config
+make
+
+0x3bf37000
+0x0fffe000
+0x1000e000
+0x1ff2e000
+relocate-section-map
+memmap -reloc 0x1000e000  -file /home/vovag/proj/octopuz/xil/octpz_tst1/octpz_tst1.sdk/uboot-x/src/u-boot
+
+memmap -relocate-section-map 0x1ff2e000
+memmap -relocate-section-map 1ff2e000
+
+memmap -relocate-section-map -addr 0x1ff2e000
+
+memmap  -addr 0x1ff2e000 -relocate-section-map
+memmap -reloc 0x1ff2e000 -file u-boot
+======= kernel ==================
+export CROSS_COMPILE=arm-xilinx-linux-gnueabi-
+export PATH=/opt/Xilinx/SDK/2015.4/gnu/arm/lin/bin:$PATH
+
+git clone  https://github.com/analogdevicesinc/linux.git
+make ARCH=arm zynq_xcomm_adv7511_defconfig
+=========================================
+export PATH=/tools/Xilinx/SDK/2019.1/gnu/aarch32/lin/gcc-arm-linux-gnueabi/bin:$PATH
+export CROSS_COMPILE=arm-linux-gnueabihf-
+
+git clone  https://github.com/Xilinx/linux-xlnx.git
+make ARCH=arm xilinx_zynq_defconfig
+make ARCH=arm menuconfig
+make ARCH=arm UIMAGE_LOADADDR=0x8000 uImage modules
+make ARCH=arm INSTALL_MOD_PATH=./tmp/ modules_install
+====================================================
+make ARCH=arm zynq_edl_defconfig
+
+make ARCH=arm zynq_myd_defconfig
+make ARCH=arm xilinx_zynq_defconfig
+make ARCH=arm menuconfig
+make ARCH=arm UIMAGE_LOADADDR=0x8000 uImage
+make ARCH=arm UIMAGE_LOADADDR=0x8000 uImage modules
+make ARCH=arm INSTALL_MOD_PATH=./tmp/ modules_install
+sudo cp -r ./tmp/lib/modules/3.18.0-xilinx-46110-gd627f5d/ /media/ROOT_FS/lib/modules/
+make headers_install ARCH=arm INSTALL_HDR_PATH=./tmp/usr
+
+===== Device Tree generator plugin for xsdk=================
+git clone  https://github.com/Xilinx/device-tree-xlnx.git
+dow -relocate-section-map 0x1ff2e000  /home/vovag/proj/octopuz/xil/octpz_tst1/octpz_tst1.sdk/uboot-x/src/u-boot
+========= Modifying the root filesystem ===================
+gunzip uramdisk.image.gz
+
+
+Initrd
+To modify an initial ramdisk:
+1. Extract the initrd image from the gzip archive.
+
+gunzip ramdisk.image.gz
+
+2. Mount the initrd image.
+
+chmod u+rwx ramdisk.image
+mkdir tmp_mnt/
+sudo mount -o loop ramdisk.image tmp_mnt/
+cd tmp_mnt/
+
+3. Make changes in the mounted filesystem.
+4. Unmount the initrd image and compress the image.
+
+sudo umount tmp_mnt/
+gzip ramdisk.image
+
+
+To create an initrd from scratch, tools such as Buildroot or Yocto may be used to populate the filesystem (with BusyBox, tools, etc.).
+Alternatively, an empty initrd may be created and then populated with the desired filesystem contents as specified above. To create an empty (8MB) initrd:
+
+dd if=/dev/zero of=ramdisk.image bs=1024 count=8192
+mke2fs -F ramdisk.image -L "ramdisk" -b 1024 -m 0
+tune2fs ramdisk.image -i 0
+chmod a+rwx ramdisk.image
+
+Initramfs
+To modify an initramfs:
+1. Extract the contents of the cpio.gz archive.
+
+mkdir tmp_mnt/
+gunzip -c initramfs.cpio.gz | sh -c 'cd tmp_mnt/ && cpio -i'
+cd tmp_mnt/
+ 
+
+2. Make changes to the filesystem.
+3. Repack the filesystem into a cpio.gz archive.
+
+sh -c 'cd tmp_mnt/ && find . | cpio -H newc -o' | gzip -9 > new_initramfs.cpio.gz
+
+To create an initramfs from scratch, tools such as Buildroot or Yocto may be used to populate the filesystem (with BusyBox, tools, etc.).
+Alternatively, initramfs image may be created by populating a directory with the desired filesystem contents and packing these contents into a cpio.gz archive as mentioned above.
+
+Wrapping the image with a U-Boot header
+For Zynq AP SoC only, the ramdisk.image.gz needs to be wrapped with a U-Boot header in order for U-Boot to boot with it:
+
+mkimage -A arm -T ramdisk -C gzip -d ramdisk.image.gz uramdisk.image.gz
+
+
+For MicroBlaze and PowerPC, the initramfs.cpio.gz presently needs to be embedded into the kernel (see Build Linux Kernel).
+
+Unwrap the image with the u-boot header
+
+dd if=uRamdisk bs=64 skip=1 of=ramdisk.gz
+===================== Device Tree Blob ==================
+./dtc -I dts -O dtb -o devicetree.dtb devicetree-zebra.dts
+./dtc -I dtb -O dts -o devicetree-zebra1.dts  _devicetree.dtb
+
+./dtc -I dtb -O dts -o devicetree-zebra1.dts  _devicetree name.dtb
+./scripts/dtc/dtc -I dtb -O dts -o <devicetree name>.dts <devicetree name>.dtb
+
+./dtc -I dtb -O dts -o zynq-zebra1.dts  zynq-zebra.dtb
+
+dtc -I dts -O dtb -o test.dtb test.dts
+
+dtc -I dts -O dtb -o test1.dtb system-top.dts
+dtc -I dts -O dtb -o devicetree.dtb devicetree-mz.dts
+dtc -I dts -O dtb -o devicetree.dtb mz_devtree.dts
+
+dtc -I dtb -O dts -o z_turn.dts  devicetree.dtb
+dtc -I dts -O dtb -o devicetree.dtb z_turn.dts
+
+dtc -I dtb -O dts -o zebra.dts  devicetree.dtb
+dtc -I dts -O dtb -o devicetree.dtb zebra.dts
+
+dtc -I dtb -O dts -o rp.dts  devicetree.dtb
+dtc -I dts -O dtb -o devicetree.dtb rp.dts
+
+dtc -I dtb -O dts -o octopuz.dts  devicetree.dtb
+dtc -I dtb -O dts -o mz.dts  devicetree.dtb
+///===========================================
+mem=384M maxcpus=1
+export PATH=/home/octopuz/mmc/usr/bin:$PATH
+///=======================================
+ImageStartAddress   0x01150000
+ImageStartAddress   0x08000(sd)
+MultiBootReg  0xc001(sd)
+
+FlashReadBaseAddress 0xe0100000 (sd)
+
+		"sf probe 0 50000000 0 && " \
+		"sf read ${kernel_load_address} 0x400000 ${kernel_size} && " \
+		"sf read ${devicetree_load_address} 0x800000 ${devicetree_size} && " \
+		"load mmc 0 ${kernel_load_address} ${kernel_image} && " \
+		"load mmc 0 ${devicetree_load_address} ${devicetree_image} && " \
+
+		"echo Copying ramdisk... && " \
+		"sf read ${ramdisk_load_address} 0x820000 ${ramdisk_size} && " \
+		"load mmc 0 ${ramdisk_load_address} ${ramdisk_image} && " \
+
+petalinux-create -t project -s ~/Downloads/Avnet-Digilent-ZedBoard-v2015.4-final.bsp
+
+petalinux-boot --qemu --prebuilt 3
+Use 'root'/'root' 
+
+export PATH=/opt/Xilinx/SDK/2015.4/gnu/arm/lin/bin:$PATH
+
+git clone git@git.dave.eu:dave/bora/bora.git -b bora
+
+
+
+======= start Xilinx SDK with extra memory for indexer: ==========================
+xsdk -vmargs -Xms1024m -Xmx2048m -XX:+UseParallelGC
+=================================
+git clone git://github.com/Xilinx/device-tree-xlnx.git
+
+/home/vovag/proj/octopuz_prj/xil/linux-xlnx-zynmp-dt-fixes-for-4.10/drivers/usb
+
+/home/vovag/proj/RedPitaya
+
+grep -r "umka2" /
+
+grep -r "dumping efuse"./
+
+grep -r "RTL8XXXU_DEBUG_EFUSE"./
+
+grep -r "USB_ULPI_BUS" ./
+grep -r "USB_ULPI_BUS" $PWD
+
+grep -r "CONFIG_USB_ULPI" ./
+grep -r "CI_HDRC_PHY_VBUS_CONTROL" ./
+grep -r "ulpi_register_interface" ./
+ulpi_register_driver
+grep -r "ulpi_register_driver" ./
+grep -r "fPic" ./
+
+======= kernel ==================
+git clone  https://github.com/Xilinx/linux-xlnx.git
+
+export CROSS_COMPILE=arm-xilinx-linux-gnueabi-
+make ARCH=arm xilinx_zynq_defconfig
+make ARCH=arm menuconfig
+#####make ARCH=arm UIMAGE_LOADADDR=0x8000 uImage
+make ARCH=arm UIMAGE_LOADADDR=0x8000 uImage modules
+make ARCH=arm INSTALL_MOD_PATH=./tmp1/ modules_install
+
+make headers_install ARCH=arm INSTALL_HDR_PATH=./tmp/usr
+
+sudo cp -r ./tmp/lib/modules/3.18.0-xilinx-46110-gd627f5d/ /media/ROOT_FS/lib/modules/
+///=============================================================
+dtc -I dts -O dtb -o devicetree.dtb zebra_18_04_23.dts
+dtc -I dtb -O dts -o zebra_18_04_23.dts  devicetree.dtb
+
+update-rc.d -f udev-fallback-graphics remove
+grep -r "init_stage2" $PWD
+
+
+ssh -p 2222 root@192.168.1.86
+ssh-keygen -f "~/.ssh/known_hosts" -R 192.168.1.86
+ssh -v root@192.168.1.86
+
+ssh -v root@192.168.1.110
+
+apt-get install build-essential 
+
+grep -r "192.168.1.110" /
+
+====== i2c ============
+
+apt-get update
+ apt-get install i2c-tools

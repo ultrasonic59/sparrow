@@ -1,0 +1,18 @@
+/*
+ * ugen_fpga.c
+ *
+ *  Created on: Apr 8, 2017
+ *      Author: vovag
+ */
+#include "./inc/ugen_fpga.h"
+
+ugen_reg_t *ugen_regs;
+
+
+int init_ugen_fpga(void)
+{
+	return 0;
+}
+
+
+

@@ -1,0 +1,89 @@
+/*
+ * udac.c
+ *
+ *  Created on: Jan 17, 2020
+ *      Author: vovag
+ */
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <unistd.h>
+#include <signal.h>
+#include <fcntl.h>
+#include <math.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include "../../common_inc/sparrow_fpga_mm.h"
+
+extern volatile void *fpga_regs;
+volatile uint16_t  *g_dac_mem = NULL;
+
+uint16_t t_sin_buff[SIN_BUFF_SIZE];
+
+void set_gen_dat(uint16_t *ibuf,int len)
+{
+int ii;
+uint16_t htmp;
+#if 1
+g_dac_mem = (uint16_t *)(fpga_regs +
+		DAC_RAM_OFFSET);
+for(ii = 0; ii < len; ii++)
+	{
+///	htmp=ibuf[ii];
+///	g_dac_mem[ii] = htmp;
+	g_dac_mem[ii] = (int16_t)ibuf[ii];
+	}
+#endif
+#if 0
+uint16_t htmp;
+g_dac_mem = (uint16_t *)(fpga_regs);
+fprintf(stderr,"\n\r");
+
+for(ii = 0; ii < 8; ii++)
+	{
+	htmp=g_dac_mem[ii] ;
+	fprintf(stderr,"[%x] ",htmp) ;
+	}
+#endif
+}
+uint16_t get_dac_reg_dat(uint16_t i_offs)
+{
+uint16_t rez;
+
+g_dac_mem = (uint16_t *)(fpga_regs +
+		DAC_REG_OFFSET);
+rez=g_dac_mem[i_offs] ;
+return rez;
+}
+uint16_t get_dac_ram_dat(uint16_t i_offs)
+{
+uint16_t rez;
+
+g_dac_mem = (uint16_t *)(fpga_regs +
+		DAC_RAM_OFFSET);
+rez=g_dac_mem[i_offs] ;
+return rez;
+}
+#define M 8191
+#define N 8191
+
+int init_sin_table(void)
+{
+int ii;
+float t_fl=5.0;
+for(ii=0;ii<SIN_BUFF_SIZE;ii++)
+	{
+	t_fl=(M*(1.0+sin((2*M_PI*ii)/N)))/2;
+	t_sin_buff[ii]=(uint16_t)t_fl;
+	}
+
+/*
+for(ii=0;ii<SIN_BUFF_SIZE;ii++)
+	{
+	t_sin_buff[ii]=(uint16_t)ii;
+	}
+	*/
+return 0;
+}
+

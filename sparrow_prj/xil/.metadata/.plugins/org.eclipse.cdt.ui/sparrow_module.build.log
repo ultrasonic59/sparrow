@@ -1,0 +1,31 @@
+19:29:03 **** Build of configuration Default for project sparrow_module ****
+make all 
+make -C ../linux-xlnx-4.19 M=/home/vovag/proj/sparrow_prj/xil/sparrow_module ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- SUBDIRS=/home/vovag/proj/sparrow_prj/xil/sparrow_module modules
+make[1]: Entering directory '/home/vovag/proj/sparrow_prj/xil/linux-xlnx-4.19'
+  CC [M]  /home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow_read.o
+  CC [M]  /home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow_drv.o
+/home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow_drv.c: In function ‘udef_of_probe’:
+/home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow_drv.c:214:40: warning: macro "__DATE__" might prevent reproducible builds [-Wdate-time]
+  sprintf(vers_str,"[v%s][%s][%s]",VERS,__DATE__,__TIME__);
+                                        ^~~~~~~~
+/home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow_drv.c:214:49: warning: macro "__TIME__" might prevent reproducible builds [-Wdate-time]
+  sprintf(vers_str,"[v%s][%s][%s]",VERS,__DATE__,__TIME__);
+                                                 ^~~~~~~~
+  CC [M]  /home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow_write.o
+  CC [M]  /home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow_ioctl.o
+/home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow_ioctl.c: In function ‘wait_ready_spi_adda’:
+/home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow_ioctl.c:164:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+  if((t_dat&SPI_BUSY_BIT)==0)
+  ^~
+/home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow_ioctl.c:166:3: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+   printk( KERN_ERR " \n\r [mod]wait_ready[%x][%x]",t_dat ,cnt_ready);
+   ^~~~~~
+  LD [M]  /home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow.mod.o
+  LD [M]  /home/vovag/proj/sparrow_prj/xil/sparrow_module/sparrow.ko
+make[1]: Leaving directory '/home/vovag/proj/sparrow_prj/xil/linux-xlnx-4.19'
+
+19:29:07 Build Finished (took 4s.99ms)
+

@@ -1,0 +1,38 @@
+/*
+ * ugen_fpga.c
+ *
+ *  Created on: Apr 8, 2017
+ *      Author: vovag
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <errno.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include "./inc/ugen_fpga.h"
+
+volatile ugen_reg_t *ugen_regs;
+volatile void *fpga_regs;
+
+
+int init_ugen_fpga(void)
+{
+int mem_file;
+if((mem_file = open("/dev/mem", O_RDWR)) < 0)
+	  {
+	  perror("open mem_file");
+	  return 1;
+	  	  }
+///ugen_regs = (ugen_reg_t *)mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ|PROT_WRITE, MAP_SHARED, mem_file, UGEN_BASE_ADDR);
+fpga_regs = mmap(NULL, sysconf(_SC_PAGESIZE), PROT_READ|PROT_WRITE, MAP_SHARED, mem_file, UGEN_BASE_ADDR);
+
+return 0;
+}
+
+
+

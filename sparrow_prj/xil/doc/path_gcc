@@ -1,0 +1,4 @@
+/opt/Xilinx/SDK/2017.2/gnu/aarch32/lin/gcc-arm-none-eabi/bin
+arm-none-eabi-gdb
+/opt/Xilinx/SDK/2017.2/gnu/aarch32/lin/gcc-arm-linux-eabi/bin
+arm-linux-gnueabihf-gdb

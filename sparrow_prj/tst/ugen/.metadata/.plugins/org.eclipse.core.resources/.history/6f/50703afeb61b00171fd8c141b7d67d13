@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <unistd.h>
+#include <signal.h>
+#include <fcntl.h>
+#include <math.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include "../inc/rp_ugen_cnf.h"
+#include "../inc/my_types.h"
+#include "../inc/udp_types.h"
+#include "../inc/udp_cmds.h"
+
+u8 buffOscs[NUM_OSC][MAX_OSC_LEN];
+
+int main(int argc, char *argv[])
+{
+  int fd,file, sockServer, sockClient;
+
+
+
+
+return 0;
+}

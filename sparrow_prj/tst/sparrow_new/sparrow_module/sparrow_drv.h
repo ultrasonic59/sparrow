@@ -1,0 +1,32 @@
+#ifndef __SPARROW_DRV_H__
+#define __SPARROW_DRV_H__
+
+
+#ifndef SPARROW_MAJOR
+#define SPARROW_MAJOR 0   /* dynamic major by default */
+#endif
+
+
+/*
+ * Split minors in two parts
+ */
+#define TYPE(minor)	(((minor) >> 4) & 0xf)	/* high nibble */
+#define NUM(minor)	((minor) & 0xf)		/* low  nibble */
+#define NUM_BANKS		2
+
+#include "../common_inc/sparrow_fpga_mm.h"
+
+#define RST_DAC_PIN (8+906)
+#define NRST_ADC_PIN 0
+#define MUX_PIN 9
+
+extern ssize_t sparrow_read( struct file * file, char * buf,
+                           size_t count, loff_t *ppos );
+extern ssize_t sparrow_write(struct file *filp, const char *buff,
+     size_t count, loff_t *offp);
+extern long sparrow_ioctl(struct file *filp
+		, unsigned int cmd, unsigned long arg);
+extern loff_t sparrow_lseek(struct file *filp, loff_t off, int whence);
+
+///++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#endif /*__SPARROW_TRK_DRV_H__*/

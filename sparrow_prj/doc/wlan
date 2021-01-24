@@ -1,0 +1,123 @@
+auto lo
+iface lo inet loopback
+auto wlan0
+iface wlan0 inet dhcp
+wpa-driver wext
+wpa-ssid Sepia
+wpa-ap-scan 1
+wpa-proto RSN
+wpa-pairwise CCMP
+wpa-group CCMP
+wpa-key-mgmt WPA-PSK
+wpa-psk sepia12345
+
+
+/etc/init.d/networking restart
+
+systemctl restart networking
+
+apt-get install dhcpcd5
+apt-get purge dhcpcd5
+======================================
+iw dev wlan0 set power_save off  !!!!!
+iw dev wlan0 set mode master  !!!!!
+=====================================
+/etc/hostapd/hostapd.conf
+
+interface=wlan0
+bridge=br0
+hw_mode=g
+channel=7
+wmm_enabled=0
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+ssid=Sepia
+wpa_passphrase=sepia12345
+=======================================
+10-eth0.network
+
+[Match]
+# You can also use wildcards. Maybe you want enable dhcp
+# an all eth* NICs
+Name=eth0
+[Network]
+#DHCP=v4
+DHCP=no
+# static IP
+# 192.168.100.2 netmask 255.255.255.0
+Address=192.168.1.110/24
+Gateway=192.168.1.1
+DNS=8.8.8.8
+==========================================
+iwlist wlan0 scan 
+
+=================== wifi-ap ========================================
+#!/bin/bash
+#script to start/stop hostapd, dnsmasq, add/remove iptables rule
+
+set -e
+exec 3>&1
+exec 2>&1 >> /tmp/wifi-ap
+
+function print_help(){
+    echo "Start/Stop Software Access Point"
+    echo
+    echo "Usage `basename $0` options..."
+    echo "wifi-ap on to start Software AP"
+    echo "wifi-ap off to stop Software AP"
+    echo
+    echo "log-file - /tmp/wifi-ap"
+    echo
+}
+if [ $# = 0 ]; then
+    print_help >&3
+        exit 0
+fi
+
+if [ $1 = on ]; then
+        systemctl stop network-manager
+        ifconfig wlan0 192.168.2.1
+        systemctl start dnsmasq
+        sysctl net.ipv4.ip_forward=1
+        iptables -t nat -A POSTROUTING -o ppp0 -j MASQUERADE
+        iptables -t mangle -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+        systemctl start hostapd
+        notify-send --expire-time=4000 "Software Access Point" "<b>start</b>"
+    exit 0
+fi
+
+if [ $1 = off ]; then
+        systemctl stop dnsmasq
+        systemctl stop hostapd
+        ifconfig wlan0 192.168.1.4
+        sysctl net.ipv4.ip_forward=0
+        iptables -D POSTROUTING -t nat -o ppp0 -j MASQUERADE
+        systemctl start network-manager
+        notify-send --expire-time=4000 "Software Access Point" "<b>stop</b>"
+    exit 0
+fi
+
+
+
+ifconfig wlan0 down
+iwconfig wlan0 Mode Master
+==================================================================
+cp defconfig .config
+
+patch -Np1 -i ~/proj/hostapd-rtl871xdrv-master/rtlxdrv.patch
+
+make CC=arm-xilinx-linux-gnueabi-gcc -I/usr/include/
+make install DESTDIR=/home/export/rootfs
+
+export OPENSSL_DIR=/usr/include
+export DIR=/usr/include
+
+
+apt-get install --reinstall wireless-tools
+hostnamectl set-hostname sepia
+

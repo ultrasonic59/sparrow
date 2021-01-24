@@ -1,0 +1,22 @@
+###CFLAGS = -Wall -O2 -DLINUX -D_GNU_SOURCE  
+CFLAGS = -Wall -g -O0 -DLINUX -D_GNU_SOURCE  
+LFLAGS += -lpthread -lrt -pthread
+
+CSRCS = ./src/rp_ugen.c ./src/udp/o_udp.c ./src/udp/pc_udp_interf.c ./src/udp/Fcs16.c 
+
+OBJS = $(CSRCS:.c=.o)
+
+.SUFFIXES:.c.o
+
+all:	rp_ugen
+
+rp_ugen: $(OBJS)
+	$(CC) $(CFLAGS) $(LFLAGS) -g -o $@ $(OBJS)
+	
+.c.o:
+	$(CC) $(CFLAGS) -g -c -o $@ $<
+
+clean:
+	rm -f rp_ugen $(OBJS) 
+ ####	find . -type f | xargs -n 5 touch
+ ###   rm -rf $(OBJS)

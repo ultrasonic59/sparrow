@@ -1,0 +1,30 @@
+#ifndef __SEPIA_TRK_DRV_H__
+#define __SEPIA_TRK_DRV_H__
+
+
+#ifndef SEPIA_TRK_MAJOR
+#define SEPIA_TRK_MAJOR 0   /* dynamic major by default */
+#endif
+
+
+/*
+ * Split minors in two parts
+ */
+#define TYPE(minor)	(((minor) >> 4) & 0xf)	/* high nibble */
+#define NUM(minor)	((minor) & 0xf)		/* low  nibble */
+#define NUM_BANKS		2
+
+////#define MAX_MUM_RD_CNT	4
+///=============== UG =======================
+#include "../common_inc/sparrow_fpga_mm.h"
+
+extern ssize_t sepia_trk_read( struct file * file, char * buf,
+                           size_t count, loff_t *ppos );
+extern ssize_t sepia_trk_write(struct file *filp, const char *buff,
+     size_t count, loff_t *offp);
+extern long sepia_trk_ioctl(struct file *filp
+		, unsigned int cmd, unsigned long arg);
+extern loff_t sepia_trk_lseek(struct file *filp, loff_t off, int whence);
+
+///++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#endif /*__SEPIA_TRK_DRV_H__*/

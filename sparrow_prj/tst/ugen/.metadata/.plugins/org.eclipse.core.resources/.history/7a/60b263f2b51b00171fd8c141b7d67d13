@@ -1,0 +1,8 @@
+#ifndef __RP_UGEN_CNF_H__
+#define __RP_UGEN_CNF_H__
+
+#define MAX_FRAME_LEN 60000
+#define LEN_OSC	256
+#define MAX_OSC_LEN 			LEN_OSC
+
+#endif

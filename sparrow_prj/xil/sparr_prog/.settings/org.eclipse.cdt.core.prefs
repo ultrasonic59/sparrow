@@ -1,0 +1,11 @@
+eclipse.preferences.version=1
+environment/project/xilinx.gnu.armv7.linux.exe.debug.1700726460/CC/delimiter=\:
+environment/project/xilinx.gnu.armv7.linux.exe.debug.1700726460/CC/operation=append
+environment/project/xilinx.gnu.armv7.linux.exe.debug.1700726460/CC/value=arm-linux-gnueabihf-gcc
+environment/project/xilinx.gnu.armv7.linux.exe.debug.1700726460/append=true
+environment/project/xilinx.gnu.armv7.linux.exe.debug.1700726460/appendContributed=true
+environment/project/xilinx.gnu.armv7.linux.exe.release.247269994/CC/delimiter=\:
+environment/project/xilinx.gnu.armv7.linux.exe.release.247269994/CC/operation=append
+environment/project/xilinx.gnu.armv7.linux.exe.release.247269994/CC/value=arm-linux-gnueabihf-gcc
+environment/project/xilinx.gnu.armv7.linux.exe.release.247269994/append=true
+environment/project/xilinx.gnu.armv7.linux.exe.release.247269994/appendContributed=true

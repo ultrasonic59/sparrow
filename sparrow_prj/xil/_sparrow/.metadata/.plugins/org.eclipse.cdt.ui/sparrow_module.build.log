@@ -1,0 +1,24 @@
+15:08:56 **** Build of configuration Default for project sparrow_module ****
+make all 
+make -C ../../linux-xlnx-4.19 M=/home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module ARCH=arm CROSS_COMPILE=arm-xilinx-linux-gnueabi- SUBDIRS=/home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module modules
+make[1]: Entering directory '/home/vovag/proj/sparrow_prj/xil/linux-xlnx-4.19'
+  CC [M]  /home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module/sparrow_read.o
+  CC [M]  /home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module/sparrow_drv.o
+/home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module/sparrow_drv.c: In function 'udef_of_probe':
+/home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module/sparrow_drv.c:212:40: warning: macro "__DATE__" might prevent reproducible builds [-Wdate-time]
+  sprintf(vers_str,"[v%s][%s][%s]",VERS,__DATE__,__TIME__);
+                                        ^
+/home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module/sparrow_drv.c:212:49: warning: macro "__TIME__" might prevent reproducible builds [-Wdate-time]
+  sprintf(vers_str,"[v%s][%s][%s]",VERS,__DATE__,__TIME__);
+                                                 ^
+  CC [M]  /home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module/sparrow_write.o
+  CC [M]  /home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module/sparrow_ioctl.o
+  LD [M]  /home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module/sparrow.o
+  Building modules, stage 2.
+  MODPOST 1 modules
+  CC      /home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module/sparrow.mod.o
+  LD [M]  /home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_module/sparrow.ko
+make[1]: Leaving directory '/home/vovag/proj/sparrow_prj/xil/linux-xlnx-4.19'
+
+15:09:01 Build Finished (took 4s.259ms)
+

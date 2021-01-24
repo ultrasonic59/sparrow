@@ -1,0 +1,20 @@
+{
+    
+    "configurations": [
+        {
+            "name": "ARM",
+            
+            "includePath": [
+                "/home/vovag/proj/sparrow_prj/xil/common_inc"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": "${workspaceRoot}/.vscode/.browse.VC.db"
+            },
+         "cStandard": "c11",
+         "cppStandard": "c++17",
+         "intelliSenseMode": "gcc-x64"
+        }
+  ],
+    "version": 4
+}

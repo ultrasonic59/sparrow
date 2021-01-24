@@ -1,0 +1,6 @@
+12:35:59 **** Build of configuration Debug for project def_sepia ****
+make all 
+make: *** No rule to make target 'src/sepia_app.o', needed by 'sepia_app'.  Stop.
+
+12:36:01 Build Finished (took 2s.71ms)
+

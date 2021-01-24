@@ -1,0 +1,5 @@
+#!/bin/sh
+
+/home/rp/test/rp_ugen &
+
+##exit 0

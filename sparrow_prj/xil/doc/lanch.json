@@ -1,0 +1,52 @@
+{
+   "version": "0.4.2",
+   "configurations": [
+       {
+           "name": "Debug gdb",
+           "type": "gdb",
+           "request": "attach",
+           "executable": "${workspaceRoot}\\Debug\\Main.elf",
+           "target": "localhost:3333",
+           "cwd": "${workspaceRoot}",
+           "gdbpath": "C:\\arm\\bin\\arm-kgp-eabi-gdb.exe",
+           "remote": true,
+           "autorun": [
+               "load ./Debug/Main.elf",
+               "break main",
+               "monitor reset"
+           ]            
+       }
+   ]
+}
+
+
+==============================================================
+   "configurations": [
+
+     {
+        "name": "OpenOCD & gdb",
+        "type": "cppdbg",
+        "request": "launch",
+        "program": "${workspaceRoot}/Debug/Main.elf",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceRoot}",
+        "environment": [],
+        "externalConsole": false,
+        "logging": {
+           "engineLogging":false,
+           "moduleLoad": true,
+           "exceptions": true
+        },
+        "windows": {
+           "MIMode": "gdb",
+           "miDebuggerPath":"c:/arm/bin/arm-none-eabi-gdb.exe",            
+           "setupCommands": [
+              {"text":"-target-select remote localhost:3333"},
+              {"text":"-interpreter-exec console \"monitor reset halt\""}
+           ],
+           "launchCompleteCommand": "exec-continue"
+        }
+     }
+  ]
+}

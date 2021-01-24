@@ -1,0 +1,6 @@
+dtc -I dtb -O dts -o sparrow.dts devicetree.dtb
+dtc -I dts -O dtb -o devicetree.dtb sparrow.dts
+
+
+dtc -I dtb -O dts -o sparr.dts devicetree.dtb
+dtc -I dts -O dtb -o devicetree.dtb sparr.dts

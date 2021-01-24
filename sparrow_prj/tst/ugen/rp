@@ -1,0 +1,78 @@
+systemctl start ugen
+systemctl daemon-reload
+systemctl stop ugen
+
+systemctl -l status ugen
+
+
+systemctl stop redpitaya_nginx
+systemctl start redpitaya_scpi
+systemctl disable redpitaya_nginx
+systemctl enable redpitaya_nginx
+systemctl start redpitaya_nginx
+
+systemctl enable  redpitaya_scpi
+CC
+arm-linux-gnueabihf-gcc
+PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/linaro/bin:/home/vovag/local/gcc-linaro-arm-linux-gnueabihf-4.9-2014.0:/home/vovag/prj/rp_test/include
+
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/linaro/bin:/home/vovag/prj/rp_test/include
+
+INCLUDES
+/home/vovag/prj/rp_test/include
+
+CROSS_COMPILE
+arm-linux-gnueabihf-
+
+
+CC
+arm-xilinx-linux-gnueabi-gcc
+PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/xilinx/bin:/home/vovag/prj/rp_test/include
+CROSS_COMPILE
+arm-xilinx-linux-gnueabi-
+
+/usr/bin/gdb-multiarch
+/usr/local/linaro/bin/arm-linux-gnueabihf-gdb
+/home/vovag/prj/rp_test/.gdbinit
+
+/home/vovag/prj/rp_test/include
+/home/vovag/local/gcc-linaro-arm-linux-gnueabihf-4.9-2014.09_linux/arm-linux-gnueabihf/libc/usr/include
+/usr/local/linaro/arm-linux-gnueabihf/libc/usr/include
+
+LD_LIBRARY_PATH=/opt/redpitaya/lib ./digital_led_blink
+
+export LD_LIBRARY_PATH=/opt/redpitaya/lib
+
+chmod 777 /home/rp/test/digital_led_blink
+
+set sysroot /my/debugger/dir
+set solib-search-path /my/debugger/lib/dir
+set debug-file-directory /my/execfile/dir
+
+///==============================================
+cat /opt/redpitaya/fpga/fpga_0.94.bit > /dev/xdevcfg
+///==============================================
+1.5.2. Manual upgrade
+A manual upgrade allows you to fix a corrupted SD card image (if only the FAT partition is corrupted) or to install older, newer or custom ecosystem zip files.
+
+Download a zip file from our download server.
+Insert SD card into card reader.
+Delete all files from the FAT partition. Use Shift + Delete to avoid placing files into a trash bin on the same partition.
+Extract the ecosystem zip file contents onto the now empty partition.
+If you wish too keep wireless settings skip deleting the next files:
+
+wpa_supplicant.conf
+hostapd.conf
+///=========================================================================================
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/xilinx/bin:/home/vovag/local/gcc-linaro-arm-linux-gnueabihf-4.9-2014.0:/home/vovag/prj/rp_test/include
+///=========================================================================================
+/usr/games:/usr/local/games:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/linaro/bin:/home/vovag/prj/rp_test/include
+///=========================================================================================
+make CROSS_COMPILE=/usr/local/linaro/bin/arm-linux-gnueabihf-
+make CC=/usr/local/linaro/bin/arm-linux-gnueabihf-gcc
+
+
+
+

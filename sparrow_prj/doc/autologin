@@ -1,0 +1,22 @@
+Edit your /etc/systemd/logind.conf , change #NAutoVTs=6 to NAutoVTs=1
+
+Create a /etc/systemd/system/getty@tty1.service.d/override.conf through ;
+
+systemctl edit getty@tty1
+Past the following lines
+
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --noclear %I 38400 linux
+enable the getty@tty1.service then reboot
+
+systemctl enable getty@tty1.service
+reboot
+=======================================================================================
+
+I just want to add to this discussion that the accepted answer pertains to virtual terminals. In my case, 
+I had to edit a separate service file which is used for serial terminals. 
+The file is found at /lib/systemd/system/serial-getty@.service and the same procedure of adding --autologin <user> to the appropriate line does the trick.
+
+[Service]
+ExecStart=-/sbin/agetty --keep-baud 115200,38400,9600 --autologin root %I $TERM

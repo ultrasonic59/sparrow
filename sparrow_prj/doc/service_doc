@@ -1,0 +1,37 @@
+ service --status-all
+
+systemd-analyze
+service networking restart
+service hostapd restart
+service udhcpd restart
+service udhcpd stop
+
+service dnsmasq restart
+systemd-analyze blame
+
+
+sudo systemctl stop apt-daily-upgrade.timer
+sudo systemctl disable apt-daily-upgrade.timer
+sudo systemctl daemon-reload
+
+systemctl stop apt-daily.timer
+ systemctl disable apt-daily.timer
+systemctl daemon-reload
+
+
+service hostapd status
+service networking status
+isc-dhcp-server.service
+
+service isc-dhcp-server restart
+service isc-dhcp-server status
+
+ systemctl stop cron
+systemctl disable cron
+
+service isc-dhcp-server start
+
+rm /var/run/dhcpd.pid
+ps auxww|grep dhcp
+
+ps ax | grep dhcp

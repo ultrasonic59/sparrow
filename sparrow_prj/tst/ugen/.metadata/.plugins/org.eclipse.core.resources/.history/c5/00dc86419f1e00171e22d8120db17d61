@@ -1,0 +1,29 @@
+###CFLAGS = -Wall -O2 -DLINUX -D_GNU_SOURCE  
+###CFLAGS += -Wall -g -O0 -DLINUX -D_GNU_SOURCE 
+
+CFLAGS  = -g -std=gnu99 -Wall -Werror -O0 -DLINUX -D_GNU_SOURCE
+CFLAGS  += -march=armv7-a -mtune=cortex-a9 -mcpu=cortex-a9 -mfpu=neon -pipe -fomit-frame-pointer
+ 
+LFLAGS = -lpthread -lrt -pthread 
+LFLAGS += -lm
+
+CSRCS = ./src/rp_ugen.c ./src/synth.c ./src/udp/o_udp.c ./src/udp/pc_udp_interf.c ./src/udp/Fcs16.c  \
+		./src/ugen_fpga.c ./src/params_ugen.c
+
+OBJS = $(CSRCS:.c=.o)
+
+.SUFFIXES:.c.o
+
+all:	rp_ugen
+
+rp_ugen: $(OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS)
+###	$(CC) $(CFLAGS) $(LFLAGS) -g -o $@ $(OBJS)
+	
+.c.o:
+	$(CC) $(CFLAGS) -g -c -o $@ $<
+
+clean:
+	rm -f rp_ugen $(OBJS) 
+ ####	find . -type f | xargs -n 5 touch
+ ###   rm -rf $(OBJS)

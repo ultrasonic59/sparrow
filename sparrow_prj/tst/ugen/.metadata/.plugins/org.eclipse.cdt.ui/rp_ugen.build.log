@@ -1,0 +1,34 @@
+15:05:31 **** Build of configuration Default for project rp_ugen ****
+make all 
+arm-linux-gnueabihf-gcc -g -std=gnu99 -Wall -O0 -DLINUX -D_GNU_SOURCE -march=armv7-a -mtune=cortex-a9 -mcpu=cortex-a9 -mfpu=neon -pipe -fomit-frame-pointer -g -c -o src/rp_ugen.o src/rp_ugen.c
+arm-linux-gnueabihf-gcc -g -std=gnu99 -Wall -O0 -DLINUX -D_GNU_SOURCE -march=armv7-a -mtune=cortex-a9 -mcpu=cortex-a9 -mfpu=neon -pipe -fomit-frame-pointer -g -c -o src/synth.o src/synth.c
+arm-linux-gnueabihf-gcc -g -std=gnu99 -Wall -O0 -DLINUX -D_GNU_SOURCE -march=armv7-a -mtune=cortex-a9 -mcpu=cortex-a9 -mfpu=neon -pipe -fomit-frame-pointer -g -c -o src/udp/o_udp.o src/udp/o_udp.c
+arm-linux-gnueabihf-gcc -g -std=gnu99 -Wall -O0 -DLINUX -D_GNU_SOURCE -march=armv7-a -mtune=cortex-a9 -mcpu=cortex-a9 -mfpu=neon -pipe -fomit-frame-pointer -g -c -o src/udp/pc_udp_interf.o src/udp/pc_udp_interf.c
+arm-linux-gnueabihf-gcc -g -std=gnu99 -Wall -O0 -DLINUX -D_GNU_SOURCE -march=armv7-a -mtune=cortex-a9 -mcpu=cortex-a9 -mfpu=neon -pipe -fomit-frame-pointer -g -c -o src/udp/Fcs16.o src/udp/Fcs16.c
+arm-linux-gnueabihf-gcc -g -std=gnu99 -Wall -O0 -DLINUX -D_GNU_SOURCE -march=armv7-a -mtune=cortex-a9 -mcpu=cortex-a9 -mfpu=neon -pipe -fomit-frame-pointer -g -c -o src/ugen_fpga.o src/ugen_fpga.c
+src/ugen_fpga.c: In function ‘init_ugen_fpga’:
+src/ugen_fpga.c:38:6: warning: unused variable ‘ii’ [-Wunused-variable]
+  int ii;
+      ^
+arm-linux-gnueabihf-gcc -g -std=gnu99 -Wall -O0 -DLINUX -D_GNU_SOURCE -march=armv7-a -mtune=cortex-a9 -mcpu=cortex-a9 -mfpu=neon -pipe -fomit-frame-pointer -g -c -o src/params_ugen.o src/params_ugen.c
+src/params_ugen.c: In function ‘set_rec_param’:
+src/params_ugen.c:68:10: warning: unused variable ‘tmp’ [-Wunused-variable]
+ uint32_t tmp;
+          ^
+src/params_ugen.c:67:5: warning: variable ‘num_bytes1’ set but not used [-Wunused-but-set-variable]
+ u16 num_bytes1;
+     ^
+src/params_ugen.c: In function ‘set_changed_param’:
+src/params_ugen.c:86:5: warning: unused variable ‘num_bytes’ [-Wunused-variable]
+ u16 num_bytes=0;
+     ^
+src/params_ugen.c:84:5: warning: unused variable ‘t_changed_param’ [-Wunused-variable]
+ u32 t_changed_param=0;
+     ^
+src/params_ugen.c:83:6: warning: unused variable ‘len’ [-Wunused-variable]
+ long len;
+      ^
+arm-linux-gnueabihf-gcc -o rp_ugen src/rp_ugen.o src/synth.o src/udp/o_udp.o src/udp/pc_udp_interf.o src/udp/Fcs16.o src/ugen_fpga.o src/params_ugen.o -g -std=gnu99 -Wall -O0 -DLINUX -D_GNU_SOURCE -march=armv7-a -mtune=cortex-a9 -mcpu=cortex-a9 -mfpu=neon -pipe -fomit-frame-pointer -lpthread -lrt -pthread  -lm
+
+15:05:32 Build Finished (took 720ms)
+

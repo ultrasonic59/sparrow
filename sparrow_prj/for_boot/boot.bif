@@ -1,0 +1,7 @@
+//arch = zynq; split = false; format = MCS
+the_ROM_image:
+{
+	[bootloader]D:\proj\velograph\octopuz\xil\for_boot\fsbl.elf
+	D:\proj\velograph\octopuz\xil\for_boot\octopuz_top.bit
+	D:\proj\velograph\octopuz\xil\for_boot\u-boot.elf
+}

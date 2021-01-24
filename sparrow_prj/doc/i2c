@@ -1,0 +1,12 @@
+ // open device on /dev/i2c-1 the default on Raspberry Pi B
+
+  if ((fd = open("/dev/i2c-0", O_RDWR)) < 0) {
+    printf("Error: Couldn't open device! %d\n", fd);
+    exit (1);
+  }
+
+  // connect to ads1115 as i2c slave
+  if (ioctl(fd, I2C_SLAVE, mcp4725_address) < 0) {
+    printf("Error: Couldn't find device on address!\n");
+    exit (1);
+  }

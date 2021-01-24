@@ -1,0 +1,100 @@
+/*
+octopuz.dts
+*/
+
+/dts-v1/;
+#include "zynq-7000.dtsi"
+
+/ {
+	#address-cells = <0x1>;
+	#size-cells = <0x1>;
+	compatible = "xlnx,zynq-7000";
+	model = "Xilinx Zynq";
+
+	chosen {
+		bootargs = "console=ttyPS0,115200";
+		linux,stdout-path = "serial0:115200n8";
+	};
+
+	aliases {
+		serial0 = &uart1;
+		serial1 = &uart0;
+		spi0 = &qspi;
+		spi1 = spi1";
+		mmc0 =&sdhci1;
+	};
+
+
+	memory {
+		device_type = "memory";
+		reg = <0x0 0x20000000>;
+	};
+
+	usb_phy0: phy0 {
+		compatible = "ulpi-phy";
+		#phy-cells = <0>;
+		reg = <0xe0002000 0x1000>;
+		view-port = <0x0170>;
+		drv-vbus;
+	};
+
+};
+&clkc {
+	ps-clk-frequency = <33333333>;
+};
+&qspi {
+	status = "okay";
+	is-dual = <0>;
+	num-cs = <1>;
+	flash@0 {
+		compatible = "n25q128a11";
+		reg = <0x0>;
+		spi-tx-bus-width = <1>;
+		spi-rx-bus-width = <4>;
+		spi-max-frequency = <50000000>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+		partition@qspi-fsbl-uboot {
+			label = "qspi-fsbl-uboot";
+			reg = <0x0 0x100000>;
+		};
+		partition@qspi-bitstream {
+			label = "qspi-bitstream";
+			reg = <0xC00000 0x400000>;
+		};
+	};
+};
+&sdhci1 {
+	status = "okay";
+};
+
+&uart0 {
+	status = "okay";
+};
+&uart1 {
+	status = "okay";
+};
+&usb0 {
+	status = "okay";
+	dr_mode = "host";
+	usb-phy = <&usb_phy0>;
+};
+
+	amba_pl {
+		#address-cells = <0x1>;
+		#size-cells = <0x1>;
+		compatible = "simple-bus";
+		linux,phandle = <0x2a>;
+		phandle = <0x2a>;
+		ranges;
+
+		axi_udef@43c00000 {
+			#udef-cells = <0x1>;
+			compatible = "vlg,axi-udef-1.0";
+			interrupt-parent = <0x3>;
+			interrupts = <0x0 0x1d 0x4>;
+			reg = <0x43c00000 0x10000>;
+		};
+	};
+
+};

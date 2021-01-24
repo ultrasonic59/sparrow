@@ -1,0 +1,446 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <errno.h>
+#include <signal.h>
+#include <sys/socket.h>
+#include <resolv.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <getopt.h>
+#include <pthread.h>
+#include <fcntl.h>
+#include <time.h>
+#include <syslog.h>
+
+#include <dirent.h>
+
+///#include "../inc/globals.h"
+///#include "../inc/weasel_cpu_cnf.h"
+///#include "../inc/weasel_cpu_types.h"
+#include "../inc/udp_cmds.h"
+///#include "../inc/weasel_udp_types.h"
+
+extern void addfcs16(unsigned char *cp, register int len );
+extern u16	pc_get_req_dat(u8 num_req,u8 *buf);
+extern int udp_check_framein(u8 *i_buff,u16 i_len);
+
+///+++++++++++++++++++++++++++++++++++++++++++++++++++++
+int udp_chk_ack(u8 *i_buff,u16 i_len)
+{
+u8 btmp;
+int res;
+int rez=0;
+if((res= udp_check_framein(i_buff,i_len))>0 )	//
+	{
+	if(*i_buff==CMD_ACK)
+		{
+		btmp = *(i_buff+1);
+		rez=btmp;
+		}
+	else
+		rez=-2;
+	}
+else
+	{
+	rez=-1;
+ 	}
+return rez;
+}
+int udp_chk_ans(u8 *i_buff,u16 i_len)
+{
+	static int tst_cnt=0;
+u8 btmp;
+int res;
+int rez=0;
+if((res= udp_check_framein(i_buff,i_len))>0 )	//
+	{
+	if(*i_buff==CMD_PUT_REQ_DAT)
+		{
+		btmp = *(i_buff+1);
+		rez=btmp;
+		}
+///	else
+///		rez=-2;
+	}
+else
+	{
+	fprintf(stderr,"\n ******error udp_chk_ans[%x:%x:%d][%d]**************",i_buff[0],i_buff[1],i_len,tst_cnt);
+	tst_cnt++;
+	rez=-1;
+ 	}
+return rez;
+}
+
+///==================================
+u16 udp_set_frame(udp_stat_t *p_udp_stat,u8 *data, int len)
+{
+addfcs16(data,len);				///
+memcpy(p_udp_stat->snd_buff,data,len +2);
+return len +2;
+}
+u16	udp_send_ack_to(udp_stat_t *p_udp_stat,u8 ipar)
+{
+u8 p_tmp[8];
+p_tmp[0]  = CMD_ACK;
+p_tmp[1] = ipar;
+return udp_set_frame(p_udp_stat,p_tmp, 2);
+}
+
+////int	udp_set_ans(u8 type_send,u8 type_dat)
+int	udp_set_send_to(udp_stat_t *p_udp_stat,u8 type_send,u8 type_dat)
+{
+int res=0;
+u16 len_dat;
+int num_send=0;
+u8 *p_tmp1;
+u8 *p_tmp	 = p_udp_stat->t_snd_buff1;
+if(type_send == SEND_ACK)
+	{
+	res=udp_send_ack_to(p_udp_stat,type_dat);
+	}
+else if(type_send == SEND_REQ_DAT)
+	{
+	*p_tmp++  = CMD_PUT_REQ_DAT;
+	num_send++;
+	*p_tmp++  = type_dat;
+	num_send++;
+	p_tmp1 = p_tmp+2;
+	len_dat = pc_get_req_dat(type_dat,p_tmp1);
+	*p_tmp++  = len_dat&0xff;
+	num_send++;
+	*p_tmp++  = (len_dat>>8)&0xff;
+	num_send++;
+	if(len_dat > MAX_FRAME_LEN)
+		len_dat = MAX_FRAME_LEN;
+	num_send += len_dat;
+	res=udp_set_frame(p_udp_stat,p_udp_stat->t_snd_buff1, num_send);
+	}
+else if(type_send == SEND_DAT)
+	{
+	num_send = p_udp_stat->snd_buff2_len;
+	memcpy(p_tmp,p_udp_stat->t_snd_buff2,num_send);
+	res=udp_set_frame(p_udp_stat,p_udp_stat->t_snd_buff1, num_send);
+	}
+else if(type_send == SEND_REQ)
+	{
+	num_send = p_udp_stat->snd_buff2_len;
+	memcpy(p_tmp,p_udp_stat->t_snd_buff2,num_send);
+	res=udp_set_frame(p_udp_stat,p_udp_stat->t_snd_buff1, num_send);
+	}
+return res;
+}
+
+int	udp_set_send_dat(udp_stat_t *p_udp_stat,u8 icmd,u8 *idat,u16 len)
+{
+int num_send=0;
+u8 *p_tmp	 = p_udp_stat->t_snd_buff2;
+if(len==0)
+	return FALSE;
+*p_tmp++  = CMD_PUT_DAT;
+num_send++;
+*p_tmp++  = icmd;
+num_send++;
+*p_tmp++  = len&0xff;
+num_send++;
+*p_tmp++  = (len>>8)&0xff;
+num_send++;
+memcpy(p_tmp,idat,len);
+num_send += len;
+p_udp_stat->snd_buff2_len=num_send;
+////type_dat=icmd;
+num_send=udp_set_send_to(p_udp_stat,SEND_DAT,icmd);
+return num_send;
+}
+//#define RSV_BUFF_SIZE	2048
+int	_udp_send_dat(thr_def_par_t *p_udp_par,u8 icmd,u8 *idat,u16 len)
+{
+#define sendbuffer p_udp_par->udp_stat_def.snd_buff
+fd_set readfds;
+struct timeval tv;
+int len_to_send;
+int n_bytes;
+int t_cmd;
+////int ii;
+int rv;
+len_to_send=udp_set_send_dat(&p_udp_par->udp_stat_def,icmd,idat,len);
+sendto(p_udp_par->socket, sendbuffer, len_to_send, 0, (struct sockaddr*)&p_udp_par->serv_addr, sizeof(p_udp_par->serv_addr));
+#undef sendbuffer
+FD_ZERO(&readfds);
+FD_SET(p_udp_par->socket, &readfds);
+tv.tv_sec = RSV_TV_SEC;
+tv.tv_usec = RSV_TV_USEC;
+
+rv = select(p_udp_par->socket + 1, &readfds, NULL, NULL, &tv);
+////if(rv==1)
+if(FD_ISSET(p_udp_par->socket, &readfds))
+{
+n_bytes = recvfrom(p_udp_par->socket,p_udp_par->udp_stat_def.in_buf ,RSV_BUFF_SIZE,0,NULL, NULL);
+if(n_bytes<0)
+	return -3;
+if((t_cmd=udp_chk_ack(p_udp_par->udp_stat_def.in_buf,n_bytes))>=0)
+	{
+	if(icmd==t_cmd)
+		return 1;
+	else
+		return -1;
+	}
+}
+////fprintf(stderr,"\n n_bytes=%x",n_bytes);
+return -2;
+}
+#if 0
+int	_udp_send_dat(thr_def_par_t *p_udp_par,u8 icmd,u8 *idat,u16 len)
+{
+#define sendbuffer p_udp_par->udp_stat_def.snd_buff
+
+int len_to_send;
+int n_bytes;
+int t_cmd;
+int ii;
+len_to_send=udp_set_send_dat(&p_udp_par->udp_stat_def,icmd,idat,len);
+sendto(p_udp_par->socket, sendbuffer, len_to_send, 0, (struct sockaddr*)&p_udp_par->serv_addr, sizeof(p_udp_par->serv_addr));
+#undef sendbuffer
+for(ii=0;ii<POPYT;ii++)
+{
+n_bytes = recvfrom(p_udp_par->socket,p_udp_par->udp_stat_def.in_buf ,RSV_BUFF_SIZE,0,NULL, NULL);
+if(n_bytes>=0)
+	{
+	break;
+	}
+else if(n_bytes<0)
+	{
+	fprintf(stderr,"\n err2 n_bytes<0[%d][%d:%d]",p_udp_par->num_bl,errno,n_bytes);
+	if(errno==11)
+		{
+////		usleep(2000);
+		continue;
+		}
+///	perror("\n err:");
+	}
+}
+if(n_bytes<0)
+	return -3;
+if((t_cmd=udp_chk_ack(p_udp_par->udp_stat_def.in_buf,n_bytes))>=0)
+{
+	if(icmd==t_cmd)
+		return 0;
+	else
+		return -1;
+}
+////fprintf(stderr,"\n n_bytes=%x",n_bytes);
+return -2;
+}
+#endif
+
+int	udp_send_dat(thr_def_par_t *p_udp_par,u8 icmd,u8 *idat,u16 len)
+{
+int ii;
+int rez;
+
+for(ii=0;ii<POPYT;ii++)
+{
+rez=_udp_send_dat(p_udp_par,icmd,idat,len);
+if(rez>0)
+	break;
+}
+return rez;
+}
+////#define POPYT	4
+int	udp_set_req_dat(udp_stat_t *p_udp_stat,u8 icmd,u16 offs)
+{
+///int ii;
+///	DWORD dwRes=0;	///
+int num_send=0;
+////	bool res=false;
+///u8 type_dat;
+////u8 type_send;
+u8 *p_tmp	 = p_udp_stat->t_snd_buff2;
+*p_tmp++  = CMD_REQ_DAT;
+num_send++;
+*p_tmp++  = icmd;
+num_send++;
+*p_tmp++  = offs&0xff;
+num_send++;
+*p_tmp++  = (offs>>8)&0xff;
+num_send++;
+///memcpy(p_tmp,idat,len);
+///num_send += len;
+p_udp_stat->snd_buff2_len=num_send;
+////type_dat=icmd;
+num_send=udp_set_send_to(p_udp_stat,SEND_REQ,icmd);
+return num_send;
+}
+uint8_t tmp_rsv_buff[MAX_FRAME_LEN];
+int udp_req_dat_from(thr_def_par_t *p_udp_par,uint8_t icmd, uint16_t offs, uint8_t *obuf)
+{
+int rez=0;
+#define sendbuffer p_udp_par->udp_stat_def.snd_buff
+fd_set readfds;
+struct timeval tv;
+int len_to_send;
+int n_bytes;
+int t_cmd;
+////int ii;
+int rv;
+len_to_send=udp_set_req_dat(&p_udp_par->udp_stat_def,icmd, offs);
+
+rez=sendto(p_udp_par->socket, sendbuffer, len_to_send, 0, (struct sockaddr*)&p_udp_par->serv_addr, sizeof(p_udp_par->serv_addr));
+#undef sendbuffer
+if(rez<0)
+	{
+	perror("\n sendto err:");
+	return -5;
+	}
+FD_ZERO(&readfds);
+FD_SET(p_udp_par->socket, &readfds);
+///tv.tv_sec = RSV_TV_SEC;
+tv.tv_sec = RSV_TV_SEC;
+tv.tv_usec = RSV_TV_USEC;
+
+rv = select(p_udp_par->socket + 1, &readfds, NULL, NULL, &tv);
+////if(rv==1)
+if(FD_ISSET(p_udp_par->socket, &readfds))
+{
+n_bytes = recvfrom(p_udp_par->socket,p_udp_par->udp_stat_def.in_buf ,RSV_BUFF_SIZE,0,NULL, NULL);
+if(n_bytes<0)
+	{
+	fprintf(stderr,"\n err n_bytes<0[%d][%d:%d]",p_udp_par->num_bl,errno,n_bytes);
+	perror("\n err:");
+///	fprintf(stderr,"\n err n_bytes<0");
+////	memset(p_udp_par->udp_stat_def.in_buf,0,RSV_BUFF_SIZE);
+	return -3;
+	}
+else if(n_bytes==0)
+	{
+	fprintf(stderr,"\n err n_bytes==0");
+	return -4;
+	}
+////memcpy(p_udp_par->udp_stat_def.in_buf,tmp_rsv_buff,n_bytes);
+if((t_cmd=udp_chk_ans(p_udp_par->udp_stat_def.in_buf,n_bytes))>=0)
+{
+	if(icmd==t_cmd)
+	{
+	uint16_t num_bytes;
+	memcpy(&num_bytes,p_udp_par->udp_stat_def.in_buf+2,sizeof(uint16_t));
+		if(num_bytes>MAX_FRAME_LEN)
+			num_bytes=MAX_FRAME_LEN;
+	memcpy(obuf,p_udp_par->udp_stat_def.in_buf+4,num_bytes);
+	return num_bytes;
+
+	}
+////		return 0;
+	else
+	{
+		fprintf(stderr,"\n err_cmd[%x:%x:[%d]]",icmd,t_cmd,n_bytes);
+		return -1;
+	}
+}
+}
+///fprintf(stderr,"\n ******error udp_chk_ans**************");
+return -2;
+
+////return rez;
+}
+#if 0
+int udp_req_dat_from(thr_def_par_t *p_udp_par,uint8_t icmd, uint16_t offs, uint8_t *obuf)
+{
+int rez=0;
+#define sendbuffer p_udp_par->udp_stat_def.snd_buff
+fd_set readfds;
+struct timeval tv;
+int len_to_send;
+int n_bytes;
+int t_cmd;
+int ii;
+len_to_send=udp_set_req_dat(&p_udp_par->udp_stat_def,icmd, offs);
+
+rez=sendto(p_udp_par->socket, sendbuffer, len_to_send, 0, (struct sockaddr*)&p_udp_par->serv_addr, sizeof(p_udp_par->serv_addr));
+#undef sendbuffer
+if(rez<0)
+	{
+	perror("\n sendto err:");
+	return -5;
+	}
+for(ii=0;ii<POPYT;ii++)
+{
+n_bytes = recvfrom(p_udp_par->socket,p_udp_par->udp_stat_def.in_buf ,RSV_BUFF_SIZE,0,NULL, NULL);
+if(n_bytes>=0)
+	{
+	break;
+	}
+else if(n_bytes<0)
+	{
+	fprintf(stderr,"\n err n_bytes1<0[%d][%d:%d]",p_udp_par->num_bl, errno,n_bytes);
+	if(errno==11)
+		{
+////		usleep(2000);
+		continue;
+		}
+///	perror("\n err:");
+	}
+}
+if(n_bytes<0)
+	{
+	fprintf(stderr,"\n err n_bytes<0[%d][%d:%d]",p_udp_par->num_bl,errno,n_bytes);
+	perror("\n err:");
+///	fprintf(stderr,"\n err n_bytes<0");
+	memset(p_udp_par->udp_stat_def.in_buf,0,RSV_BUFF_SIZE);
+	return -3;
+	}
+else if(n_bytes==0)
+	{
+	fprintf(stderr,"\n err n_bytes==0");
+	return -4;
+	}
+////memcpy(p_udp_par->udp_stat_def.in_buf,tmp_rsv_buff,n_bytes);
+if((t_cmd=udp_chk_ans(p_udp_par->udp_stat_def.in_buf,n_bytes))>=0)
+{
+	if(icmd==t_cmd)
+	{
+	uint16_t num_bytes;
+	memcpy(&num_bytes,p_udp_par->udp_stat_def.in_buf+2,sizeof(uint16_t));
+		if(num_bytes>MAX_FRAME_LEN)
+			num_bytes=MAX_FRAME_LEN;
+	memcpy(obuf,p_udp_par->udp_stat_def.in_buf+4,num_bytes);
+	return num_bytes;
+
+	}
+////		return 0;
+	else
+	{
+		fprintf(stderr,"\n err[%x:%x:[%d]]",icmd,t_cmd,n_bytes);
+		return -1;
+	}
+}
+///fprintf(stderr,"\n ******error udp_chk_ans**************");
+return -2;
+
+return rez;
+}
+#endif
+///=============================================
+void udp_buffs_init(udp_stat_t *p_udp_stat)
+{
+p_udp_stat->in_buf = (u8*) malloc(MAX_FRAME_LEN);
+if( p_udp_stat->in_buf == NULL )
+	DPRINT("udp_init: NO MEM\n");
+
+p_udp_stat->snd_buff	= (u8*)malloc(MAX_FRAME_LEN);
+if(p_udp_stat->snd_buff == NULL )
+	DPRINT("udp_buffs_init(): NO MEM FOR SND_BUF\n");
+p_udp_stat->t_snd_buff1	= (u8*)malloc(MAX_FRAME_LEN);
+if(p_udp_stat->t_snd_buff1 == NULL )
+	DPRINT("udp_buffs_init(): NO MEM FOR SND_BUF\n");
+p_udp_stat->t_snd_buff2	= (u8*)malloc(MAX_FRAME_LEN);
+if(p_udp_stat->t_snd_buff2 == NULL )
+	DPRINT("udp_buffs_init(): NO MEM FOR SND_BUF\n");
+}
+///=============================================
+///=============================================
+
+

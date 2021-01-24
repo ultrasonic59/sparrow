@@ -1,0 +1,9 @@
+eclipse.preferences.version=1
+environment/project/0.1233582535/CC/delimiter=\:
+environment/project/0.1233582535/CC/operation=replace
+environment/project/0.1233582535/CC/value=arm-linux-gnueabihf-gcc
+environment/project/0.1233582535/PATH/delimiter=\:
+environment/project/0.1233582535/PATH/operation=append
+environment/project/0.1233582535/PATH/value=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/usr/local/linaro/bin\:/home/vovag/prj/rp_test/include
+environment/project/0.1233582535/append=true
+environment/project/0.1233582535/appendContributed=true

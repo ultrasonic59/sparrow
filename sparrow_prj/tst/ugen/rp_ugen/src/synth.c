@@ -1,0 +1,160 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+
+#include "./inc/rp_ugen_cnf.h"
+#include "./inc/my_types.h"
+#include "./inc/udp_types.h"
+#include "./inc/udp_cmds.h"
+#include "./inc/ugen_fpga.h"
+
+/* Constants */
+/** DAC frequency (125 Mspmpls (non-decimated)) */
+const double c_awg_smpl_freq = 125e6;
+#if 1
+/**
+ * Synthesize a desired signal.
+ *
+ * Generates/synthesized  a signal, based on three pre-defined signal
+ * types/shapes, signal amplitude & frequency. The data[] vector of
+ * samples at 125 MHz is generated to be re-played by the FPGA AWG module.
+ *
+ * @param ampl  Signal amplitude [Vpp].
+ * @param freq  Signal frequency [Hz].
+ * @param type  Signal type/shape [Sine, Square, Triangle].
+ * @param data  Returned synthesized AWG data vector.
+ * @param awg   Returned AWG parameters.
+ *
+ */
+void synthesize_signal(double ampl, double freq, signal_e type, double endfreq,
+                       int32_t *data,
+                       awg_param_t *awg) {
+
+    uint32_t i;
+
+    /* Various locally used constants - HW specific parameters */
+    const int dcoffs = -155;
+    const int trans0 = 30;
+    const int trans1 = 300;
+    const double tt2 = 0.249;
+
+    /* This is where frequency is used... */
+    awg->offsgain = (dcoffs << 16) + 0x1fff;
+    awg->step = round(65536 * freq/c_awg_smpl_freq * n);
+    awg->wrap = round(65536 * n - 1);
+
+    int trans = freq / 1e6 * trans1; /* 300 samples at 1 MHz */
+    uint32_t amp = ampl * 4000.0;    /* 1 Vpp ==> 4000 DAC counts */
+    if (amp > 8191) {
+        /* Truncate to max value if needed */
+        amp = 8191;
+    }
+
+    if (trans <= 10) {
+        trans = trans0;
+    }
+
+
+    /* Fill data[] with appropriate buffer samples */
+    for(i = 0; i < n; i++) {
+
+        /* Sine */
+        if (type == eSignalSine) {
+            data[i] = round(amp * cos(2*M_PI*(double)i/(double)n));
+        }
+
+        /* Square */
+        if (type == eSignalSquare) {
+            data[i] = round(amp * cos(2*M_PI*(double)i/(double)n));
+            if (data[i] > 0)
+                data[i] = amp;
+            else
+                data[i] = -amp;
+
+            /* Soft linear transitions */
+            double mm, qq, xx, xm;
+            double x1, x2, y1, y2;
+
+            xx = i;
+            xm = n;
+            mm = -2.0*(double)amp/(double)trans;
+            qq = (double)amp * (2 + xm/(2.0*(double)trans));
+
+            x1 = xm * tt2;
+            x2 = xm * tt2 + (double)trans;
+
+            if ( (xx > x1) && (xx <= x2) ) {
+
+                y1 = (double)amp;
+                y2 = -(double)amp;
+
+                mm = (y2 - y1) / (x2 - x1);
+                qq = y1 - mm * x1;
+
+                data[i] = round(mm * xx + qq);
+            }
+
+            x1 = xm * 0.75;
+            x2 = xm * 0.75 + trans;
+
+            if ( (xx > x1) && (xx <= x2)) {
+
+                y1 = -(double)amp;
+                y2 = (double)amp;
+
+                mm = (y2 - y1) / (x2 - x1);
+                qq = y1 - mm * x1;
+
+                data[i] = round(mm * xx + qq);
+            }
+        }
+
+        /* Triangle */
+        if (type == eSignalTriangle) {
+            data[i] = round(-1.0*(double)amp*(acos(cos(2*M_PI*(double)i/(double)n))/M_PI*2-1));
+        }
+
+        /* Sweep */
+        /* Loops from i = 0 to n = 16*1024. Generates a sine wave signal that
+           changes in frequency as the buffer is filled. */
+        double start = 2 * M_PI * freq;
+        double end = 2 * M_PI * endfreq;
+        if (type == eSignalSweep) {
+            double sampFreq = c_awg_smpl_freq; // 125 MHz
+            double t = i / sampFreq; // This particular sample
+            double T = n / sampFreq; // Wave period = # samples / sample frequency
+            /* Actual formula. Frequency changes from start to end. */
+            data[i] = round(amp * (sin((start*T)/log(end/start) * ((exp(t*log(end/start)/T)-1)))));
+        }
+
+        /* TODO: Remove, not necessary in C/C++. */
+        if(data[i] < 0)
+            data[i] += (1 << 14);
+    }
+}
+#endif
+
+void calc_sin(int32_t *data,int16_t num)
+{
+int ii;
+int jj;
+for(jj=0;jj<num;jj++)
+	{
+	for(ii = 0; ii < NUM_PNT_SIN; ii++)
+		{
+		data[ii+jj*NUM_PNT_SIN] = 8191+round(8191 * sin(2*M_PI*(double)ii/(double)NUM_PNT_SIN));
+
+////		data[ii+jj*NUM_PNT_SIN] = 0xfff;
+////		data[ii+jj*NUM_PNT_SIN] = 8191 * sin(2*M_PI*(double)ii/(double)NUM_PNT_SIN));
+		}
+#if 0
+	for(ii = 0; ii < NUM_PNT_SIN/2; ii++)
+		{
+		data[ii+jj*NUM_PNT_SIN] = 0x2fff;
+////		data[ii+jj*NUM_PNT_SIN] = round(8*8191 * sin(2*M_PI*(double)ii/(double)NUM_PNT_SIN));
+		}
+#endif
+	}
+}

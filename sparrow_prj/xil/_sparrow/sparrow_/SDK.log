@@ -1,0 +1,10 @@
+15:20:49 INFO  : Registering command handlers for SDK TCF services
+15:20:56 INFO  : Launching XSCT server: xsct -n -interactive /home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_/temp_xsdb_launch_script.tcl
+15:20:58 INFO  : XSCT server has started successfully.
+15:20:58 INFO  : Successfully done setting XSCT server connection channel  
+15:20:58 INFO  : Successfully done setting SDK workspace  
+15:22:02 INFO  : Registering command handlers for SDK TCF services
+15:22:03 INFO  : Launching XSCT server: xsct -n -interactive /home/vovag/proj/sparrow_prj/xil/sparrow/sparrow_/temp_xsdb_launch_script.tcl
+15:22:05 INFO  : XSCT server has started successfully.
+15:22:05 INFO  : Successfully done setting XSCT server connection channel  
+15:22:05 INFO  : Successfully done setting SDK workspace  
