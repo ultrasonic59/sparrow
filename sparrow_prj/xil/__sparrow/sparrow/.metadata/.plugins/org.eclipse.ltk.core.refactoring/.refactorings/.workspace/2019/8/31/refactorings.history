@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Delete resource &apos;def_sepia&apos;" deleteContents="true" description="Delete resource &apos;def_sepia&apos;" element1="/def_sepia" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1564652564188"/>
-</session>

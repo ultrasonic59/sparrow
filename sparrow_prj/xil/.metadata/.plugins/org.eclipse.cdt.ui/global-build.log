@@ -1,14 +1,14 @@
-21:48:39 **** Build of configuration Debug for project sparr_prog ****
+21:46:05 **** Build of configuration Debug for project sparr_prog ****
 make all 
 arm-linux-gnueabihf-gcc -Wall -DLINUX -D_GNU_SOURCE   -g -c -o src/sparrow_app.o src/sparrow_app.c
 src/sparrow_app.c: In function ‘main’:
-src/sparrow_app.c:227:1: warning: implicit declaration of function ‘put_rele’ [-Wimplicit-function-declaration]
+src/sparrow_app.c:228:1: warning: implicit declaration of function ‘put_rele’ [-Wimplicit-function-declaration]
  put_rele(ON20DB);
  ^~~~~~~~
-src/sparrow_app.c:140:10: warning: unused variable ‘prev’ [-Wunused-variable]
+src/sparrow_app.c:141:10: warning: unused variable ‘prev’ [-Wunused-variable]
  uint16_t prev=0x45;
           ^~~~
-src/sparrow_app.c:139:10: warning: unused variable ‘htmp’ [-Wunused-variable]
+src/sparrow_app.c:140:10: warning: unused variable ‘htmp’ [-Wunused-variable]
  uint16_t htmp=0;
           ^~~~
 arm-linux-gnueabihf-gcc -Wall -DLINUX -D_GNU_SOURCE   -g -c -o src/sparrow_fpga.o src/sparrow_fpga.c

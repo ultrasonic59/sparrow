@@ -1,4 +1,0 @@
-cat /boot/fpga/fpga.bin >/dev/xdevcfg
-
-grep “text string” directory
-grep -r “fpga.bin” /*.*

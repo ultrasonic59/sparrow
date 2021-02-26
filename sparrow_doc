@@ -1,0 +1,3 @@
+init_sin_table();
+
+set_dac_ram_dat(t_sin_buff,SIN_BUFF_SIZE);

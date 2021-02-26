@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;sparrow&apos;" deleteContents="false" description="Delete resource &apos;sparrow&apos;" element1="/sparrow" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1565277204521"/>&#x0A;<refactoring comment="Delete resource &apos;sparrow_module&apos;" deleteContents="false" description="Delete resource &apos;sparrow_module&apos;" element1="/sparrow_module" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1565277219687"/>
-</session>

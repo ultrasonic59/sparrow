@@ -62,4 +62,4 @@ __attribute__((section(".modinfo"))) =
 MODULE_ALIAS("of:N*T*Cvlg,axi-udef-1.0");
 MODULE_ALIAS("of:N*T*Cvlg,axi-udef-1.0C*");
 
-MODULE_INFO(srcversion, "9DEB382B9ADE723F0B44273");
+MODULE_INFO(srcversion, "F71E2BF7926126DAAE5309A");

@@ -52,8 +52,9 @@ extern int init_kus_adc(void);
 extern int put_kus_adc(uint16_t i_val);
 extern int init_fpga_mem(void);
 extern int init_sin_table(void);
-extern void set_gen_dat(uint16_t *ibuf,int len);
+////extern void set_gen_dat(uint16_t *ibuf,int len);
 extern uint16_t t_sin_buff[SIN_BUFF_SIZE];
+extern void set_dac_ram_dat(uint16_t *ibuf,int len);
 
 
 const char* VER_TXT="sparrow v1.0(G.V.A.)";
@@ -167,7 +168,7 @@ init_adc(0);
 init_fpga_mem();
 init_sin_table();
 
-set_gen_dat(t_sin_buff,SIN_BUFF_SIZE);
+set_dac_ram_dat(t_sin_buff,SIN_BUFF_SIZE);
 ///set_gen_dat(t_sin_buff,8000);
 
 

@@ -20,6 +20,8 @@ static const int UGEN_BASE_SIZE = 0x10000;
 #define DAC_DDS_L_OFFSET     		0x4
 #define DAC_DDS_H_OFFSET    		0x5
 #define DAC_CNT_LEN_OFFSET   		0x6
+#define DELAY_DAC_L_OFFSET   				0x8
+#define DELAY_DAC_H_OFFSET   				0x9
 
 ///=========================================
 #define ADDR_COMMON		0x0000
@@ -69,17 +71,17 @@ static const int UGEN_BASE_SIZE = 0x10000;
 #define sifdac(x)			(x&0x3fff)
 ///========================
 #define ADDR_DAC_CONF    0x800
-#define B_ON_DDS		1
-#define B_ENA_DDS		2
-#define ON_DDS 			(0x1<<B_ON_DDS)
-#define ENA_DDS			(0x1<<B_ENA_DDS)
+///#define B_ON_DDS		1
+///#define B_ENA_DDS		2
+///#define ON_DDS 			(0x1<<B_ON_DDS)
+///#define ENA_DDS			(0x1<<B_ENA_DDS)
 
-#define DEF_DAC_CONF	(ON_DDS|ENA_DDS)
+#define DEF_DAC_CONF	0	////(ON_DDS|ENA_DDS)
 
 #define ADDR_DAC_DDS	0x804	///32b
 ////#define DEF_DDS_VAL		42949673	/// 4MHz 400MHz
 #define DEF_DDS_VAL		68174084	/// 4MHz 252MHz
-
+#define DEF_FRQ_DAC		2520000		///252MHz(0.1 KHz)
 ///======== ADC ===========
 
 #define ADDR_ADC_OUT    		0x1001

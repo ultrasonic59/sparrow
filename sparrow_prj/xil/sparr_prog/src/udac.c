@@ -23,7 +23,7 @@ volatile uint16_t  *g_dac_mem = NULL;
 
 uint16_t t_sin_buff[SIN_BUFF_SIZE];
 
-void set_gen_dat(uint16_t *ibuf,int len)
+void set_dac_ram_dat(uint16_t *ibuf,int len)
 {
 int ii;
 ///uint16_t htmp;
@@ -67,6 +67,53 @@ g_dac_mem = (uint16_t *)(fpga_regs +
 rez=g_dac_mem[i_offs] ;
 return rez;
 }
+void set_dac_cnt_len(uint16_t i_len)
+{
+g_dac_mem = (uint16_t *)(fpga_regs +
+				DAC_REG_OFFSET);
+*(g_dac_mem+DAC_CNT_LEN_OFFSET)=	i_len;
+
+}
+void set_dac_delay(uint16_t i_del)
+{
+g_dac_mem = (uint16_t *)(fpga_regs +
+				DAC_REG_OFFSET);
+*(g_dac_mem+DELAY_DAC_L_OFFSET)=	i_del;
+*(g_dac_mem+DELAY_DAC_H_OFFSET)=	0;
+
+}
+
+void set_freq(uint32_t frq)
+{
+uint32_t i_tmp;
+double d_tmp=pow(2.0,32)*frq;
+d_tmp/=DEF_FRQ_DAC;
+i_tmp=(uint32_t)d_tmp;
+g_dac_mem = (uint16_t *)(fpga_regs +
+			DAC_REG_OFFSET);
+*(g_dac_mem+DAC_DDS_L_OFFSET)=	i_tmp&0xffff;
+*(g_dac_mem+DAC_DDS_H_OFFSET)=	(i_tmp>>16)&0xffff;
+
+////fprintf(stderr,"\n===set_freq[%d]====",frq);
+
+}
+#define DAC_DDS_REJ			0x0
+#define DAC_RAM_REJ			0x1
+
+#define MASK_DAC_REJ	0x7
+
+void set_dac_rej(uint16_t rej)
+{
+g_dac_mem = (uint16_t *)(fpga_regs +
+				DAC_REG_OFFSET);
+*(g_dac_mem+DAC_CONF_OFFSET)=	rej;
+if((rej&MASK_DAC_REJ) == DAC_DDS_REJ)
+	{
+	set_dac_ram_dat(t_sin_buff,SIN_BUFF_SIZE);
+	}
+fprintf(stderr,"\n===set_dac_rej[%x]====",rej);
+
+}
 #define M 8191
 #define N 8191
 
@@ -93,7 +140,7 @@ const int urele_address = 0x30;
 int put_rele(uint8_t i_val)
 {
 uint8_t writeBuf[1];
-///fprintf(stderr,"put_rele[%x]!\n",i_val);
+fprintf(stderr,"put_rele[%x]\n",i_val);
 
 if (ioctl(fd_i2c, I2C_SLAVE, urele_address) < 0)
 	{

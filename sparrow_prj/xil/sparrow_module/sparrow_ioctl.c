@@ -368,10 +368,10 @@ if(tbuff->ndata>MAX_XIL_DATA_LEN)
 for(ii=0;ii<tbuff->ndata;ii++)
 	{
 ///	iowrite16(tbuff->data[ii], (void*)(octopuz_trk_base+xil_dat_req.addr+ii));
-	wr_dat_fpga(xil_dat_req.addr+ii ,tbuff->data[ii]);
+	wr_dat_fpga(tbuff->addr+ii ,tbuff->data[ii]);
 	}
 ///======================================================
-///printk( KERN_ERR "\n=== [mod]put_xil_data[%x:%x]",xil_dat_req.addr,tbuff->data[0] );
+printk( KERN_ERR "\n=== [mod]put_xil_data[%x:%x]",tbuff->addr,tbuff->data[0] );
 ///============================================================
 }
 void put_rst_dac(int on_off)

@@ -70,14 +70,17 @@
 #define CHNG_IMP_POINTS			(0x1<<5)
 #define CHNG_KUS				(0x1<<6)
 #define CHNG_ATT				(0x1<<9)
+#define CHNG_FREQ				(0x1<<10)
+#define CHNG_DAC_REJ			(0x1<<11)
 
+#if 0
 #define CHNG_BSTRB		(0x1<<10)
 #define CHNG_LSTRB		(0x1<<11)
 #define CHNG_PRE		(0x1<<20)
 #define CHNG_RNG		(0x1<<21)
 #define CHNG_LEN_DEF	(0x1<<22)
 #define CHNG_FORM		(0x1<<23)
-
+#endif
 ///================================================
 #define SEND_DAT					(0x1<<0)
 #define SEND_ACK					(0x1<<1)
