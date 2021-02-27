@@ -112,7 +112,7 @@ if(g_changed_param&CHNG_KUS)
 	memcpy(&tmp_dat,t_par_buff+t_offs,sizeof(u16));
 	put_kus_adc(tmp_dat<<4);
 	t_offs+=sizeof(u16);
-	fprintf(stderr,"\n===CHNG_KUS[%d]====",tmp_dat);
+	////fprintf(stderr,"\n===CHNG_KUS[%d]====",tmp_dat);
 	g_changed_param&=~CHNG_KUS;
 	}
 if(g_changed_param&CHNG_ATT)
@@ -135,7 +135,7 @@ if(g_changed_param&CHNG_FREQ)
 	memcpy(&tmp,t_par_buff+t_offs,sizeof(uint32_t));
 	set_freq(tmp);
 	t_offs+=sizeof(uint32_t);
-	fprintf(stderr,"\n===CHNG_FREQ[%d]====",tmp);
+	////fprintf(stderr,"\n===CHNG_FREQ[%d]====",tmp);
 	g_changed_param&=~CHNG_FREQ;
 	}
 if(g_changed_param&CHNG_DAC_REJ)
@@ -147,7 +147,7 @@ if(g_changed_param&CHNG_DAC_REJ)
 	memcpy(&tmp,t_par_buff+t_offs,sizeof(uint16_t));
 	set_dac_rej(tmp);
 	t_offs+=sizeof(uint16_t);
-	fprintf(stderr,"\n===CHNG_DAC_REJ[%x]====",tmp);
+	////fprintf(stderr,"\n===CHNG_DAC_REJ[%x]====",tmp);
 	g_changed_param&=~CHNG_DAC_REJ;
 	}
 

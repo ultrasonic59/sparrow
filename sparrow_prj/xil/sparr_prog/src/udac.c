@@ -19,16 +19,19 @@
 
 extern int fd_i2c;
 extern volatile void *fpga_regs;
-volatile uint16_t  *g_dac_mem = NULL;
+///volatile uint16_t  *g_dac_mem = NULL;
 
-uint16_t t_sin_buff[SIN_BUFF_SIZE];
+///uint16_t t_sin_buff[SIN_BUFF_SIZE];
+volatile int16_t  *g_dac_mem = NULL;
 
-void set_dac_ram_dat(uint16_t *ibuf,int len)
+int16_t t_sin_buff[SIN_BUFF_SIZE];
+
+void set_dac_ram_dat(int16_t *ibuf,int len)
 {
 int ii;
 ///uint16_t htmp;
 #if 1
-g_dac_mem = (uint16_t *)(fpga_regs +
+g_dac_mem = (int16_t *)(fpga_regs +
 		DAC_RAM_OFFSET);
 for(ii = 0; ii < len; ii++)
 	{
@@ -53,7 +56,7 @@ uint16_t get_dac_reg_dat(uint16_t i_offs)
 {
 uint16_t rez;
 
-g_dac_mem = (uint16_t *)(fpga_regs +
+g_dac_mem = (int16_t *)(fpga_regs +
 		DAC_REG_OFFSET);
 rez=g_dac_mem[i_offs] ;
 return rez;
@@ -62,21 +65,21 @@ uint16_t get_dac_ram_dat(uint16_t i_offs)
 {
 uint16_t rez;
 
-g_dac_mem = (uint16_t *)(fpga_regs +
+g_dac_mem = (int16_t *)(fpga_regs +
 		DAC_RAM_OFFSET);
 rez=g_dac_mem[i_offs] ;
 return rez;
 }
 void set_dac_cnt_len(uint16_t i_len)
 {
-g_dac_mem = (uint16_t *)(fpga_regs +
+g_dac_mem = (int16_t *)(fpga_regs +
 				DAC_REG_OFFSET);
 *(g_dac_mem+DAC_CNT_LEN_OFFSET)=	i_len;
 
 }
 void set_dac_delay(uint16_t i_del)
 {
-g_dac_mem = (uint16_t *)(fpga_regs +
+g_dac_mem = (int16_t *)(fpga_regs +
 				DAC_REG_OFFSET);
 *(g_dac_mem+DELAY_DAC_L_OFFSET)=	i_del;
 *(g_dac_mem+DELAY_DAC_H_OFFSET)=	0;
@@ -89,7 +92,7 @@ uint32_t i_tmp;
 double d_tmp=pow(2.0,32)*frq;
 d_tmp/=DEF_FRQ_DAC;
 i_tmp=(uint32_t)d_tmp;
-g_dac_mem = (uint16_t *)(fpga_regs +
+g_dac_mem = (int16_t *)(fpga_regs +
 			DAC_REG_OFFSET);
 *(g_dac_mem+DAC_DDS_L_OFFSET)=	i_tmp&0xffff;
 *(g_dac_mem+DAC_DDS_H_OFFSET)=	(i_tmp>>16)&0xffff;
@@ -104,14 +107,14 @@ g_dac_mem = (uint16_t *)(fpga_regs +
 
 void set_dac_rej(uint16_t rej)
 {
-g_dac_mem = (uint16_t *)(fpga_regs +
+g_dac_mem = (int16_t *)(fpga_regs +
 				DAC_REG_OFFSET);
 *(g_dac_mem+DAC_CONF_OFFSET)=	rej;
 if((rej&MASK_DAC_REJ) == DAC_DDS_REJ)
 	{
 	set_dac_ram_dat(t_sin_buff,SIN_BUFF_SIZE);
 	}
-fprintf(stderr,"\n===set_dac_rej[%x]====",rej);
+////fprintf(stderr,"\n===set_dac_rej[%x]====",rej);
 
 }
 #define M 8191
@@ -123,8 +126,9 @@ int ii;
 double t_fl=5.0;
 for(ii=0;ii<SIN_BUFF_SIZE;ii++)
 	{
-	t_fl=(M*(1.0+sin((2*M_PI*ii)/N)))/2;
-	t_sin_buff[ii]=(uint16_t)t_fl;
+////	t_fl=(M*(1.0+sin((2*M_PI*ii)/N)))/2;
+	t_fl=(M*(sin((2*M_PI*ii)/N)))/2;
+	t_sin_buff[ii]=(int16_t)t_fl;
 	}
 
 /*
@@ -140,7 +144,7 @@ const int urele_address = 0x30;
 int put_rele(uint8_t i_val)
 {
 uint8_t writeBuf[1];
-fprintf(stderr,"put_rele[%x]\n",i_val);
+////fprintf(stderr,"put_rele[%x]\n",i_val);
 
 if (ioctl(fd_i2c, I2C_SLAVE, urele_address) < 0)
 	{

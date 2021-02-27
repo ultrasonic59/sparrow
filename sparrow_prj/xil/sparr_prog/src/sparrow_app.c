@@ -55,6 +55,7 @@ extern int init_sin_table(void);
 ////extern void set_gen_dat(uint16_t *ibuf,int len);
 extern uint16_t t_sin_buff[SIN_BUFF_SIZE];
 extern void set_dac_ram_dat(uint16_t *ibuf,int len);
+extern int put_rele(uint8_t i_val);
 
 
 const char* VER_TXT="sparrow v1.0(G.V.A.)";
@@ -137,8 +138,8 @@ int main()
 {
 ////int ii;
 ///uint8_t btmp=0;
-uint16_t htmp=0;
-uint16_t prev=0x45;
+///uint16_t htmp=0;
+///uint16_t prev=0x45;
 
 int	rez=0;
 char tbuf[256];
